@@ -1,0 +1,4 @@
+service:
+  metrics:
+    prometheus:
+      enabled: true

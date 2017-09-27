@@ -1,0 +1,96 @@
+server:
+  context-path: /${spring.application.name}
+  tomcat:
+    accesslog:
+      enabled: false
+    basedir: .
+
+spring:
+  application:
+    name: demo
+  cache:
+    type: none
+  profiles:
+    active: local
+  output:
+    ansi:
+      enabled: ALWAYS
+  jackson:
+    default-property-inclusion: non_null
+  cloud:
+    config:
+      allow-override: true
+      override-none: false
+      fail-fast: true
+      override-system-properties: false
+      enabled: false
+  sleuth:
+    web:
+      enabled: true
+    sampler:
+      percentage: 100
+  zipkin:
+    base-url: http://localhost:8680/
+    flush-interval: 15
+    enabled: false
+#  data:
+#    mongodb:
+#      repositories:
+#        enabled: false
+
+logging:
+  level:
+    ROOT: INFO
+    com.amazonaws: DEBUG
+
+
+service:
+  myKey1: test1
+  myKey2: test2
+  metrics:
+    dropwizard:
+      enabled: true
+    prometheus:
+      enabled: true
+  git:
+    enabled: false
+  vip:
+    enabled: false
+  swagger:
+    enabled: false
+  jsonp:
+    enabled: false
+  logging:
+    enabled: true
+
+
+memcached:
+  cache:
+    servers: localhost:11111
+    mode: static
+
+
+management:
+  security:
+    enabled: false
+
+hystrix:
+  command:
+    helloCommandKey:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+      circuitBreaker:
+        requestVolumeThreshold: 4
+        sleepWindowInMilliseconds: 60000
+      metrics:
+        rollingStats:
+          timeInMilliseconds: 180000
+  threadpool:
+    helloThreadPoolKey:
+      coreSize: 30
+      metrics:
+        rollingStats:
+          timeInMilliseconds:18000
+

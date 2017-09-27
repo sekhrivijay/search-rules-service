@@ -49,19 +49,17 @@ service:
   myKey2: test2
   metrics:
     dropwizard:
-      enabled: true
+      enabled: false
     prometheus:
-      enabled: true
+      enabled: false
   git:
     enabled: false
   vip:
     enabled: false
   swagger:
     enabled: false
-  jsonp:
-    enabled: false
   logging:
-    enabled: true
+    enabled: false
 
 
 memcached:

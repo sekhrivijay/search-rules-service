@@ -5,6 +5,6 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/sekhrivijay/ms-template.git
+          uri: https://github.com/sekhrivijay/search-rule-service.git
           force-pull: true
           search-paths: /src/main/resources

@@ -26,9 +26,15 @@ public class ServiceResource {
     private RulesService rulesService;
 
     @GetMapping
-    public ServiceResponse getMessage() {
+    public ServiceResponse getMessage(String a) {
         LOGGER.info("getMessage called");
-        return rulesService.getResponse("testkey");
+        return rulesService.getResponse(a);
+    }
+
+    @GetMapping(value = "/change")
+    public ServiceResponse getMess() {
+        LOGGER.info("getMess called");
+        return rulesService.getResponse();
     }
 
     @GetMapping(value = "/plain")

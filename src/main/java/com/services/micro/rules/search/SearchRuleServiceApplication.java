@@ -13,7 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableCircuitBreaker
 @EnableHystrixDashboard
 @EnableConfigServer
-//@ComponentScan({"com"})
 public class SearchRuleServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SearchRuleServiceApplication.class, args);

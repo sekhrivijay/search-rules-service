@@ -51,7 +51,7 @@ public class RulesServiceImpl implements RulesService {
     public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
         Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
         RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
-        ruleServiceResponse.setRule(rule);
+        ruleServiceResponse.setRule(rule.toString());
         return ruleServiceResponse;
 
     }

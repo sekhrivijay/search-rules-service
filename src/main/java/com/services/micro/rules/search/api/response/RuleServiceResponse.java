@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class RuleServiceResponse implements Serializable {
     private String message;
     private String type;
-    private Rule rule;
+    private String rule;
 
     public String getMessage() {
         return message;
@@ -25,11 +25,11 @@ public class RuleServiceResponse implements Serializable {
         this.type = type;
     }
 
-    public Rule getRule() {
+    public String getRule() {
         return rule;
     }
 
-    public void setRule(Rule rule) {
+    public void setRule(String rule) {
         this.rule = rule;
     }
 }

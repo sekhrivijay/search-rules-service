@@ -21,13 +21,26 @@ public class RulesResource {
     }
 
     @PostMapping("/")
-    public RuleServiceResponse createRule(RuleServiceRequest ruleServiceRequest) throws Exception {
+    public RuleServiceResponse createRule(@RequestBody RuleServiceRequest ruleServiceRequest) throws Exception {
         return rulesService.create(ruleServiceRequest);
     }
 
     @GetMapping("/")
     public RuleServiceResponse readRule(RuleServiceRequest ruleServiceRequest) throws Exception {
         return rulesService.read(ruleServiceRequest);
+    }
+
+    @GetMapping("/test")
+    public RuleServiceRequest testRule(RuleServiceRequest ruleServiceRequest) throws Exception {
+        return RuleServiceRequest.RuleServiceRequestBuilder
+                .aRuleServiceRequest()
+                .withEnvironment("testend")
+                .withPackageName("testttpack")
+                .withRuleName("My rule name")
+                .withRule("My rule ..")
+                .withServiceName("my srevice name")
+                .build();
+//        return rulesService.read(ruleServiceRequest);
     }
 
     @DeleteMapping("/")

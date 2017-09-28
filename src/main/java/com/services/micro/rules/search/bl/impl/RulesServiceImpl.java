@@ -5,13 +5,15 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.services.micro.commons.logging.annotation.LogExecutionTime;
-import com.services.micro.rules.search.api.response.ServiceResponse;
+import com.services.micro.rules.search.api.request.RuleServiceRequest;
+import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import com.services.micro.rules.search.config.RulesConfigurationProperties;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieScanner;
+import org.kie.api.definition.KiePackage;
+import org.kie.api.definition.rule.Rule;
+import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -26,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service(value = "RulesService")
@@ -34,32 +37,56 @@ public class RulesServiceImpl implements RulesService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesServiceImpl.class);
 
-    private  KieContainer kContainer;
-    private KieSession ks;
     private  InternalKnowledgeBase kbase;
     private KnowledgeBuilder kbuilder;
-//
+
+
+    @Override
+    public RuleServiceResponse create(RuleServiceRequest ruleServiceRequest) throws Exception {
+        createOrUpdateRule(ResourceFactory.newByteArrayResource(ruleServiceRequest.getRule().getBytes()));
+        return null;
+    }
+
+    @Override
+    public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
+        Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
+        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
+        ruleServiceResponse.setRule(rule);
+        return ruleServiceResponse;
+
+    }
+
+    @Override
+    public RuleServiceResponse update(RuleServiceRequest ruleServiceRequest) throws Exception {
+        createOrUpdateRule(ResourceFactory.newByteArrayResource(ruleServiceRequest.getRule().getBytes()));
+        return null;
+    }
+
+    @Override
+    public RuleServiceResponse delete(RuleServiceRequest ruleServiceRequest) throws Exception {
+        kbase.removeRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
+        return null;
+    }
+
     public RulesServiceImpl() {
         try {
             // load up the knowledge base
             kbase = KnowledgeBaseFactory.newKnowledgeBase();
             kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
             kbuilder.add( ResourceFactory.newClassPathResource( "a.drl") ,  ResourceType.DRL);
-
             kbase.addPackages( kbuilder.getKnowledgePackages() );
-
-//            KieSession ks = kbase.newKieSession();
-//            KieServices ks = KieServices.Factory.get();
-//            kContainer = ks.getKieClasspathContainer();
-//            KieScanner kieScanner = ks.newKieScanner(kContainer);
-//            kieScanner.start(2000L);
-
         } catch (Throwable t) {
-            t.printStackTrace();
+            LOGGER.error("Cannot build knowledge base", t);
         }
     }
 
-    public ServiceResponse getResponse() {
+
+    private void createOrUpdateRule(Resource resource) {
+        kbuilder.add(resource, ResourceType.DRL);
+        kbase.addPackages(kbuilder.getKnowledgePackages());
+    }
+
+    public RuleServiceResponse getResponse() {
         String q = "package droolsexample\n" +
                 "\n" +
                 "import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;\n" +
@@ -76,14 +103,24 @@ public class RulesServiceImpl implements RulesService {
                 "    then\n" +
                 "        System.out.println( message );\n" +
                 "    modify ( m ) { message = \"Goodbye cruel world CHANGEDD........\",\n" +
-                "                   status = Message.GOODBYE };\n" +
+                "                   status = Message.HELLO };\n" +
                 "end\n";
-        ResourceFactory.newByteArrayResource(q.getBytes());
+//        ResourceFactory.newByteArrayResource(q.getBytes());
 //        kbuilder.add( ResourceFactory.newClassPathResource( "b.drl") ,  ResourceType.DRL);
         kbuilder.add( ResourceFactory.newByteArrayResource(q.getBytes()) ,  ResourceType.DRL);
         kbase.addPackages( kbuilder.getKnowledgePackages() );
-
-            return new ServiceResponse();
+        Collection<KiePackage> pkgs  = kbuilder.getKnowledgePackages();
+        for(KiePackage kiePackage: pkgs) {
+            System.out.println(pkgs);
+            System.out.println("size is " +pkgs.size());
+            System.out.println("name " + kiePackage.getName());
+            Collection<Rule> rules = kiePackage.getRules();
+            for (Rule rule: rules) {
+                System.out.println("rule is " + rule);
+                System.out.println("rule name is " + rule.getName());
+            }
+        }
+            return new RuleServiceResponse();
     }
 
 
@@ -103,23 +140,23 @@ public class RulesServiceImpl implements RulesService {
             fallbackMethod = "fallbackHello")
     @Cacheable(cacheNames = "default")
     @LogExecutionTime
-    public ServiceResponse getResponse(String key) {
+    public RuleServiceResponse getResponse(String key) {
         LOGGER.info("getResponse called ");
-        ServiceResponse serviceResponse = new ServiceResponse();
+        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
 
-//        serviceResponse.setMessage("Hello " + key + rulesConfigurationProperties.getMyKey1() + "  key1 is " + myKey1);
-//        serviceResponse.setType("valid");
+//        ruleServiceResponse.setMessage("Hello " + key + rulesConfigurationProperties.getMyKey1() + "  key1 is " + myKey1);
+//        ruleServiceResponse.setType("valid");
 //        StatefulKnowledgeSession statelessKnowledgeSession = kbase.newStatefulKnowledgeSession();
 //        statelessKnowledgeSession.insert("vijay");
 //        statelessKnowledgeSession.fireAllRules();
         exe(key);
-        return serviceResponse;
+        return ruleServiceResponse;
     }
 
-    public ServiceResponse fallbackHello(String name) {
-        ServiceResponse serviceResponse = new ServiceResponse();
-        serviceResponse.setMessage("This is Hello fromm fallback " + name);
-        return serviceResponse;
+    public RuleServiceResponse fallbackHello(String name) {
+        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
+        ruleServiceResponse.setMessage("This is Hello fromm fallback " + name);
+        return ruleServiceResponse;
     }
 
     private void exe(String key) {
@@ -147,6 +184,7 @@ public class RulesServiceImpl implements RulesService {
 
             // 5 - fire the rules
             knowledgeSession.fireAllRules();
+
             System.out.println(message);
         } catch (Throwable t) {
             t.printStackTrace();

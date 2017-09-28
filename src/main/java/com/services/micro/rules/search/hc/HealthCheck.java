@@ -1,6 +1,6 @@
 package com.services.micro.rules.search.hc;
 
-import com.services.micro.rules.search.api.response.ServiceResponse;
+import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -20,8 +20,8 @@ public class HealthCheck implements HealthIndicator {
 
     @Override
     public Health health() {
-        ServiceResponse serviceResponse = rulesService.getResponse("test");
-//        if (serviceResponse.getMessage().equals("Hello test")) {
+        RuleServiceResponse ruleServiceResponse = rulesService.getResponse("test");
+//        if (ruleServiceResponse.getMessage().equals("Hello test")) {
             return Health.up().build();
 //        }
 //        return Health

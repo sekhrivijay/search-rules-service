@@ -1,6 +1,6 @@
 package com.services.micro.rules.search.resource;
 
-import com.services.micro.rules.search.api.response.ServiceResponse;
+import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -42,9 +42,9 @@ public class ServiceResourceTest {
     @Test
     public void testString() throws Exception {
 
-        ServiceResponse serviceResponse = new ServiceResponse();
-        serviceResponse.setMessage("hello test");
-        when(rulesService.getResponse("test")).thenReturn(serviceResponse);
+        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
+        ruleServiceResponse.setMessage("hello test");
+        when(rulesService.getResponse("test")).thenReturn(ruleServiceResponse);
 
         mockMvc.perform(get("/test/plain"))
                 .andExpect(status().isOk())
@@ -57,10 +57,10 @@ public class ServiceResourceTest {
     @Test
     public void testJson() throws Exception {
 
-        ServiceResponse serviceResponse = new ServiceResponse();
-        serviceResponse.setMessage("hello test");
-        serviceResponse.setType("MyType");
-        when(rulesService.getResponse("testkey")).thenReturn(serviceResponse);
+        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
+        ruleServiceResponse.setMessage("hello test");
+        ruleServiceResponse.setType("MyType");
+        when(rulesService.getResponse("testkey")).thenReturn(ruleServiceResponse);
 
 
         mockMvc.perform(get("/test")

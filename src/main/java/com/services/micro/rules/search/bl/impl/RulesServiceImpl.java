@@ -58,22 +58,34 @@ public class RulesServiceImpl implements RulesService {
         }
         createOrUpdateRule(ResourceFactory.newByteArrayResource(ruleServiceRequest.getRule().getBytes()));
         ruleRepository.save(ruleServiceRequest);
-        return null;
+        return buildRuleServiceResponse(ruleServiceRequest, getRuleServiceRequestFromDb(ruleServiceRequest));
     }
 
     @Override
     public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
         validateServiceRequest(ruleServiceRequest);
 //        Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
-        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
+//        RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
 //        ruleServiceResponse.setRule(rule.toString());
         RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
-//        if(ruleServiceRequestFromDb != null) {
-//            ruleServiceResponse.setRule(ruleServiceRequestFromDb.getRule());
-//        }
+        if(ruleServiceRequestFromDb == null) {
+            throw new Exception("Rule could not be found");
+        }
 
-        return ruleServiceResponse;
+        return buildRuleServiceResponse(ruleServiceRequest, ruleServiceRequestFromDb);
 
+
+    }
+
+    private RuleServiceResponse buildRuleServiceResponse(RuleServiceRequest ruleServiceRequest, RuleServiceRequest ruleServiceRequestFromDb) {
+        return RuleServiceResponse.RuleServiceResponseBuilder.aRuleServiceResponse()
+                    .withEnvironment(ruleServiceRequest.getEnvironment())
+                    .withMetaData(ruleServiceRequest.getMetaData())
+                    .withServiceName(ruleServiceRequest.getServiceName())
+                    .withPackageName(ruleServiceRequest.getPackageName())
+                    .withRuleName(ruleServiceRequest.getRuleName())
+                    .withRule(ruleServiceRequestFromDb.getRule())
+                    .build();
     }
 
     private RuleServiceRequest getRuleServiceRequestFromDb(RuleServiceRequest ruleServiceRequest) {

@@ -33,10 +33,9 @@ spring:
     base-url: http://localhost:8680/
     flush-interval: 15
     enabled: false
-#  data:
-#    mongodb:
-#      repositories:
-#        enabled: false
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/searchrules
 
 logging:
   level:

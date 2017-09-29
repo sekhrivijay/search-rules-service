@@ -8,6 +8,7 @@ import com.services.micro.commons.logging.annotation.LogExecutionTime;
 import com.services.micro.rules.search.api.request.RuleServiceRequest;
 import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
+import com.services.micro.rules.search.bl.repository.RuleRepository;
 import com.services.micro.rules.search.config.RulesConfigurationProperties;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
@@ -41,19 +42,46 @@ public class RulesServiceImpl implements RulesService {
     private KnowledgeBuilder kbuilder;
 
 
+    private RuleRepository ruleRepository;
+
+    @Autowired
+    public void setRuleRepository(RuleRepository ruleRepository) {
+        this.ruleRepository = ruleRepository;
+    }
+
     @Override
     public RuleServiceResponse create(RuleServiceRequest ruleServiceRequest) throws Exception {
+        validateServiceRequest(ruleServiceRequest);
+        RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
+        if(ruleServiceRequestFromDb != null) {
+            throw new Exception("A rule with same ruleName , packageName, serviceName and environment already exist");
+        }
         createOrUpdateRule(ResourceFactory.newByteArrayResource(ruleServiceRequest.getRule().getBytes()));
+        ruleRepository.save(ruleServiceRequest);
         return null;
     }
 
     @Override
     public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
-        Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
+        validateServiceRequest(ruleServiceRequest);
+//        Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
         RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
-        ruleServiceResponse.setRule(rule.toString());
+//        ruleServiceResponse.setRule(rule.toString());
+        RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
+//        if(ruleServiceRequestFromDb != null) {
+//            ruleServiceResponse.setRule(ruleServiceRequestFromDb.getRule());
+//        }
+
         return ruleServiceResponse;
 
+    }
+
+    private RuleServiceRequest getRuleServiceRequestFromDb(RuleServiceRequest ruleServiceRequest) {
+        return ruleRepository.findByPackageNameAndRuleNameAndServiceNameAndEnvironment(
+                ruleServiceRequest.getPackageName(),
+                ruleServiceRequest.getRuleName(),
+                ruleServiceRequest.getServiceName(),
+                ruleServiceRequest.getEnvironment());
     }
 
     @Override
@@ -124,6 +152,15 @@ public class RulesServiceImpl implements RulesService {
     }
 
 
+    private void validateServiceRequest(RuleServiceRequest ruleServiceRequest) throws Exception {
+        if(ruleServiceRequest.getServiceName() == null
+                || ruleServiceRequest.getEnvironment() == null
+                || ruleServiceRequest.getRuleName() == null
+                || ruleServiceRequest.getPackageName() == null) {
+            throw new Exception("Missing mandatory fields. All 4 fields serviceName, environment, ruleName and packageName are required");
+        }
+
+    }
 
     @Autowired
     private RulesConfigurationProperties rulesConfigurationProperties;

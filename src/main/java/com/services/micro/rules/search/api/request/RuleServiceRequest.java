@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RuleServiceRequest implements Serializable  {
+    private String id;
     private String environment;
     private String serviceName;
     private String ruleName;
@@ -58,6 +59,14 @@ public class RuleServiceRequest implements Serializable  {
 
     public void setMetaData(Map<String, String> metaData) {
         this.metaData = metaData;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override

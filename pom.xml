@@ -94,11 +94,6 @@
             <artifactId>commons-logging</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.drools</groupId>-->
-            <!--<artifactId>drools-persistence-jpa</artifactId>-->
-            <!--<version>${drools.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
@@ -124,11 +119,12 @@
             <artifactId>kie-internal</artifactId>
             <version>${drools.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.drools</groupId>-->
-            <!--<artifactId>knowledge-api</artifactId>-->
-            <!--<version>${drools.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.services.micro</groupId>
+            <artifactId>generic-search</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <classifier>client</classifier>
+        </dependency>
 
 
         <dependency>

@@ -43,7 +43,7 @@ public class ServiceResourceTest {
     public void testString() throws Exception {
 
         RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
-        ruleServiceResponse.setMessage("hello test");
+//        ruleServiceResponse.setMessage("hello test");
         when(rulesService.getResponse("test")).thenReturn(ruleServiceResponse);
 
         mockMvc.perform(get("/test/plain"))
@@ -58,8 +58,8 @@ public class ServiceResourceTest {
     public void testJson() throws Exception {
 
         RuleServiceResponse ruleServiceResponse = new RuleServiceResponse();
-        ruleServiceResponse.setMessage("hello test");
-        ruleServiceResponse.setType("MyType");
+//        ruleServiceResponse.setMessage("hello test");
+//        ruleServiceResponse.setPackageName("MyType");
         when(rulesService.getResponse("testkey")).thenReturn(ruleServiceResponse);
 
 

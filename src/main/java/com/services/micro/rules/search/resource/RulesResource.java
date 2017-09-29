@@ -5,7 +5,6 @@ import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,22 +24,14 @@ public class RulesResource {
         return rulesService.create(ruleServiceRequest);
     }
 
+    @PutMapping("/")
+    public RuleServiceResponse updateRule(@RequestBody RuleServiceRequest ruleServiceRequest) throws Exception {
+        return rulesService.update(ruleServiceRequest);
+    }
+
     @GetMapping("/")
     public RuleServiceResponse readRule(RuleServiceRequest ruleServiceRequest) throws Exception {
         return rulesService.read(ruleServiceRequest);
-    }
-
-    @GetMapping("/test")
-    public RuleServiceRequest testRule(RuleServiceRequest ruleServiceRequest) throws Exception {
-        return RuleServiceRequest.RuleServiceRequestBuilder
-                .aRuleServiceRequest()
-                .withEnvironment("testend")
-                .withPackageName("testttpack")
-                .withRuleName("My rule name")
-                .withRule("My rule ..")
-                .withServiceName("my srevice name")
-                .build();
-//        return rulesService.read(ruleServiceRequest);
     }
 
     @DeleteMapping("/")

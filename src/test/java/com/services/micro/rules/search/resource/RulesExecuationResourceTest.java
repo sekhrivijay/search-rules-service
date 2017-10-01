@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 @RunWith(SpringRunner.class)
-public class ServiceResourceTest {
+public class RulesExecuationResourceTest {
     private MockMvc mockMvc;
 
 
@@ -29,12 +29,12 @@ public class ServiceResourceTest {
     private RulesService rulesService;
 
     @InjectMocks
-    private ServiceResource serviceResource;
+    private RulesExecuationResource rulesExecuationResource;
 
 
     @Before
     public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(serviceResource)
+        mockMvc = MockMvcBuilders.standaloneSetup(rulesExecuationResource)
                 .build();
     }
 

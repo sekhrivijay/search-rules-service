@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -41,20 +42,16 @@ public class RulesServiceImpl implements RulesService {
     private  InternalKnowledgeBase kbase;
     private KnowledgeBuilder kbuilder;
 
+    @Autowired
+    public void setKbase(InternalKnowledgeBase kbase) {
+        this.kbase = kbase;
+    }
+    @Autowired
+    public void setKbuilder(KnowledgeBuilder kbuilder) {
+        this.kbuilder = kbuilder;
+    }
 
     private RuleRepository ruleRepository;
-    public RulesServiceImpl() {
-        try {
-            // load up the knowledge base
-            kbase = KnowledgeBaseFactory.newKnowledgeBase();
-            kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-
-//            kbuilder.add( ResourceFactory.newClassPathResource( "a.drl") ,  ResourceType.DRL);
-//            kbase.addPackages( kbuilder.getKnowledgePackages() );
-        } catch (Throwable t) {
-            LOGGER.error("Cannot build knowledge base", t);
-        }
-    }
 
     @PostConstruct
     public void loadRules() {

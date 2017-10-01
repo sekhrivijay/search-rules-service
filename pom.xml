@@ -105,11 +105,6 @@
             <version>${drools.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.drools</groupId>
-            <artifactId>drools</artifactId>
-            <version>${drools.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.kie</groupId>
             <artifactId>kie-api</artifactId>
             <version>${drools.version}</version>
@@ -119,6 +114,12 @@
             <artifactId>kie-internal</artifactId>
             <version>${drools.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.solr</groupId>
+            <artifactId>solr-solrj</artifactId>
+            <version>7.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>com.services.micro</groupId>
             <artifactId>generic-search</artifactId>

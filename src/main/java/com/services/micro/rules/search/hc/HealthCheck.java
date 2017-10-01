@@ -20,7 +20,7 @@ public class HealthCheck implements HealthIndicator {
 
     @Override
     public Health health() {
-        RuleServiceResponse ruleServiceResponse = rulesService.getResponse("test");
+//        RuleServiceResponse ruleServiceResponse = rulesService.getResponse("test");
 //        if (ruleServiceResponse.getMessage().equals("Hello test")) {
             return Health.up().build();
 //        }

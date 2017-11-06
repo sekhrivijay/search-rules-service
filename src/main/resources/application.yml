@@ -3,11 +3,11 @@ server:
   tomcat:
     accesslog:
       enabled: false
-    basedir: .
+  port: 8070
 
 spring:
   application:
-    name: demo
+    name: search-rules-service
   cache:
     type: none
   profiles:
@@ -35,12 +35,11 @@ spring:
     enabled: false
   data:
     mongodb:
-      uri: mongodb://localhost:27017/searchrules
+      uri: mongodb://freshdapp01v2.ftdi.com:27017/searchrules
 
 logging:
   level:
     ROOT: INFO
-    com.amazonaws: DEBUG
 
 
 service:
@@ -60,11 +59,6 @@ service:
   logging:
     enabled: false
 
-
-memcached:
-  cache:
-    servers: localhost:11111
-    mode: static
 
 
 management:

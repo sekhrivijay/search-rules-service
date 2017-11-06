@@ -1,18 +1,12 @@
-package droolsexample
+package com.services.micro.rules.search.test
 
-import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;
-
-global java.util.List list
+import com.services.micro.rules.search.test.DroolsTest.Message;
 
 rule "Hello World"
-    dialect "mvel"
     when
         m : Message( status == Message.HELLO, message : message )
     then
         System.out.println( message );
-//        modify ( m ) { setMessage( "Goodbyte cruel world" ),
-//                       setStatus( Message.GOODBYE ) };
-    modify ( m ) { message = "Goodbye cruel world",
-                   status = Message.GOODBYE };
 end
+
 

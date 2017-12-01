@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RefreshScope
-@RequestMapping("/rules")
+@RequestMapping("/api/v1/rules")
 public class RulesExecutionResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionResource.class);

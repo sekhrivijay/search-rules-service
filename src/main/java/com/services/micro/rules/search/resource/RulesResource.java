@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RefreshScope
-@RequestMapping("/rules")
+@RequestMapping("/api/v1/rules")
 public class RulesResource {
 
     private RulesService rulesService;

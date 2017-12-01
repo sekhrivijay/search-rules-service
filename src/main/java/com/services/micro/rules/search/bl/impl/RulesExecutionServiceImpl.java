@@ -4,6 +4,7 @@ import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
 import com.micro.services.search.api.SearchModelWrapper;
 import com.services.micro.rules.search.bl.RulesExecutionService;
+import com.services.micro.rules.search.config.RulesConfiguration;
 import com.services.micro.rules.search.config.RulesConfigurationProperties;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.runtime.KieSession;
@@ -19,12 +20,18 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionServiceImpl.class);
 
-    private InternalKnowledgeBase kbase;
+//    private InternalKnowledgeBase kbase;
+    private RulesConfiguration rulesConfiguration;
 
     @Autowired
-    public void setKbase(InternalKnowledgeBase kbase) {
-        this.kbase = kbase;
+    public void setRulesConfiguration(RulesConfiguration rulesConfiguration) {
+        this.rulesConfiguration = rulesConfiguration;
     }
+//
+//    @Autowired
+//    public void setKbase(InternalKnowledgeBase kbase) {
+//        this.kbase = kbase;
+//    }
 
 
     @Override
@@ -33,7 +40,6 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
     public SearchModelWrapper executePre(SearchModelWrapper searchModelWrapper) throws Exception {
         return fireRules(searchModelWrapper);
     }
-
 
 
     @Override
@@ -47,9 +53,9 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
     private SearchModelWrapper fireRules(SearchModelWrapper searchModelWrapper) {
         KieSession knowledgeSession = null;
         try {
-            knowledgeSession = kbase.newKieSession();
-            knowledgeSession.insert( searchModelWrapper.getSearchServiceRequest() );
-            knowledgeSession.insert( searchModelWrapper.getSearchServiceResponse() );
+            knowledgeSession = rulesConfiguration.getKbase().newKieSession();
+            knowledgeSession.insert(searchModelWrapper.getSearchServiceRequest());
+            knowledgeSession.insert(searchModelWrapper.getSearchServiceResponse());
             knowledgeSession.fireAllRules();
 
             LOGGER.info(searchModelWrapper.toString());

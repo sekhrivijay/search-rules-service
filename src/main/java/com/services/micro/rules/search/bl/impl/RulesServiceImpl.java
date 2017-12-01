@@ -9,6 +9,7 @@ import com.services.micro.rules.search.api.request.RuleServiceRequest;
 import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import com.services.micro.rules.search.bl.repository.RuleRepository;
+import com.services.micro.rules.search.config.RulesConfiguration;
 import com.services.micro.rules.search.config.RulesConfigurationProperties;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,25 +41,46 @@ public class RulesServiceImpl implements RulesService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesServiceImpl.class);
 
-    private  InternalKnowledgeBase kbase;
-    private KnowledgeBuilder kbuilder;
+//    private InternalKnowledgeBase kbase;
+//    private KnowledgeBuilder kbuilder;
+    private RulesConfiguration rulesConfiguration;
 
     @Autowired
-    public void setKbase(InternalKnowledgeBase kbase) {
-        this.kbase = kbase;
+    public void setRulesConfiguration(RulesConfiguration rulesConfiguration) {
+        this.rulesConfiguration = rulesConfiguration;
     }
-    @Autowired
-    public void setKbuilder(KnowledgeBuilder kbuilder) {
-        this.kbuilder = kbuilder;
-    }
+//    @Autowired
+//    public void setKbase(InternalKnowledgeBase kbase) {
+//        this.kbase = kbase;
+//    }
+//    @Autowired
+//    public void setKbuilder(KnowledgeBuilder kbuilder) {
+//        this.kbuilder = kbuilder;
+//    }
 
     private RuleRepository ruleRepository;
 
     @PostConstruct
     public void loadRules() {
+//        rulesConfiguration.setKbase();
         ruleRepository
                 .findAll()
                 .forEach(this::createOrUpdateRule);
+    }
+
+    @Scheduled(fixedRate = 50000)
+    public void refreshRules() {
+        InternalKnowledgeBase kbaseTmp = rulesConfiguration.kbase();
+        KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.kbuilder();
+        ruleRepository
+                .findAll()
+                .forEach(e -> refresh(e, knowledgeBuilderTmp, kbaseTmp));
+        rulesConfiguration.setKbase(kbaseTmp);
+        rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
+    }
+
+    private void refresh(RuleServiceRequest ruleServiceRequest,  KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+        createOrUpdateRule(ruleServiceRequest, kbuilder, kbase);
     }
 
 
@@ -90,7 +113,7 @@ public class RulesServiceImpl implements RulesService {
     public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
         validateServiceRequest(ruleServiceRequest);
         RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
-        Rule rule = kbase.getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
+        Rule rule = rulesConfiguration.getKbase().getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
         if(ruleServiceRequestFromDb == null || rule == null) {
             throw new Exception("Rule could not be found");
         }
@@ -112,7 +135,7 @@ public class RulesServiceImpl implements RulesService {
     public RuleServiceResponse delete(RuleServiceRequest ruleServiceRequest) throws Exception {
         validateServiceRequest(ruleServiceRequest);
 
-        kbase.removeRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
+        rulesConfiguration.getKbase().removeRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
         ruleRepository.delete(getRuleServiceRequestFromDb(ruleServiceRequest));
         return null;
     }
@@ -122,7 +145,7 @@ public class RulesServiceImpl implements RulesService {
         KieSession knowledgeSession = null;
         try {
 
-            knowledgeSession = kbase.newKieSession();
+            knowledgeSession = rulesConfiguration.getKbase().newKieSession();
 
             // 4 - create and assert some facts
 //            Person rocky = new Person("Rocky Balboa", "Philadelphia", 35);
@@ -174,17 +197,21 @@ public class RulesServiceImpl implements RulesService {
 
 
 
-
-
     private void createOrUpdateRule(RuleServiceRequest ruleServiceRequest) {
-        LOGGER.info("Adding rule into knowledge base " + ruleServiceRequest);
-        createOrUpdateRule(getResource(ruleServiceRequest));
+        createOrUpdateRule(ruleServiceRequest, rulesConfiguration.getKbuilder(), rulesConfiguration.getKbase());
     }
 
-    private void createOrUpdateRule(Resource resource) {
+    private void createOrUpdateRule(RuleServiceRequest ruleServiceRequest, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+        LOGGER.info("Adding rule into knowledge base " + ruleServiceRequest);
+        createOrUpdateRule(getResource(ruleServiceRequest), kbuilder, kbase);
+    }
+
+
+    private void createOrUpdateRule(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
         kbuilder.add(resource, ResourceType.DRL);
         kbase.addPackages(kbuilder.getKnowledgePackages());
     }
+
 
 //    public RuleServiceResponse getResponse() {
 //        String q = "package droolsexample\n" +
@@ -273,7 +300,7 @@ public class RulesServiceImpl implements RulesService {
         try {
 
             //knowledgeSession = kContainer.newKieSession("ksession-rules");
-            knowledgeSession = kbase.newKieSession();
+            knowledgeSession = rulesConfiguration.getKbase().newKieSession();
 
             // 4 - create and assert some facts
 //            Person rocky = new Person("Rocky Balboa", "Philadelphia", 35);

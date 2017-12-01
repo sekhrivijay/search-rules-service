@@ -1,5 +1,5 @@
 server:
-  context-path: /${spring.application.name}
+#  context-path: /${spring.application.name}
   tomcat:
     accesslog:
       enabled: false
@@ -43,8 +43,6 @@ logging:
 
 
 service:
-  myKey1: test1
-  myKey2: test2
   metrics:
     dropwizard:
       enabled: false

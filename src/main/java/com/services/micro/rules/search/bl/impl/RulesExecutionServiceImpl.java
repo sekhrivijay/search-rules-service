@@ -58,7 +58,8 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
             knowledgeSession.insert(searchModelWrapper.getSearchServiceResponse());
             knowledgeSession.fireAllRules();
 
-            LOGGER.info(searchModelWrapper.toString());
+
+            LOGGER.info("OUTSIDE   " + searchModelWrapper.toString());
         } catch (Throwable t) {
             LOGGER.error("Could not execute rule ", t);
         } finally {

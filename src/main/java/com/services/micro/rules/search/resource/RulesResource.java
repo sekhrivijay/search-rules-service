@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RefreshScope
-@RequestMapping("/api/v1/rules")
+@RequestMapping("/api/rules")
 public class RulesResource {
 
     private RulesService rulesService;
@@ -35,7 +35,7 @@ public class RulesResource {
     }
 
     @DeleteMapping("/")
-    public RuleServiceResponse deleteRule(RuleServiceRequest ruleServiceRequest) throws Exception {
+    public RuleServiceResponse deleteRule(@RequestBody RuleServiceRequest ruleServiceRequest) throws Exception {
         return rulesService.delete(ruleServiceRequest);
     }
 }

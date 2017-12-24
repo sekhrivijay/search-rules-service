@@ -75,10 +75,11 @@ public class Test {
                 "\t\tredirect.setRedirectUrl(\"http://abc.com/flowers-cat/roses\");\n" +
                 "\t\tres.setRedirect(redirect);\n" +
                 "end";
+        System.out.println(r);
 //        ResourceFactory.newByteArrayResource(q.getBytes());
 //        kbuilder.add( ResourceFactory.newClassPathResource( "b.drl") ,  ResourceType.DRL);
-        kbuilder.add(ResourceFactory.newByteArrayResource(q.getBytes()), ResourceType.DRL);
-        kbuilder.add(ResourceFactory.newByteArrayResource(w.getBytes()), ResourceType.DRL);
+//        kbuilder.add(ResourceFactory.newByteArrayResource(q.getBytes()), ResourceType.DRL);
+//        kbuilder.add(ResourceFactory.newByteArrayResource(w.getBytes()), ResourceType.DRL);
         kbuilder.add(ResourceFactory.newByteArrayResource(r.getBytes()), ResourceType.DRL);
         kbase.addPackages(kbuilder.getKnowledgePackages());
         Collection<KiePackage> pkgs = kbuilder.getKnowledgePackages();
@@ -99,12 +100,12 @@ public class Test {
         message.setMessage("Hello aaaaaWorld");
         message.setStatus(RulesServiceImpl.Message.HELLO);
 
-        SearchModelWrapper searchModelWrapper = new SearchModelWrapper();
         SearchServiceRequest searchServiceRequest = new SearchServiceRequest();
         searchServiceRequest.setQ("roses");
         SearchServiceResponse searchServiceResponse = new SearchServiceResponse();
-        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
-        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
+        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
+//        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
+//        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
 
 
 //        knowledgeSession.insert( message );
@@ -163,12 +164,12 @@ public class Test {
     }
 
     public static void main(String[] args) {
-        SearchModelWrapper searchModelWrapper = new SearchModelWrapper();
         SearchServiceRequest searchServiceRequest = new SearchServiceRequest();
         searchServiceRequest.setQ("roses");
         SearchServiceResponse searchServiceResponse = new SearchServiceResponse();
-        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
-        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
+        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
+//        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
+//        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
         Test test = new Test();
 //        test.fireRules(searchModelWrapper);
 

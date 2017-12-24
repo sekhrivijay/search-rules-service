@@ -68,7 +68,7 @@ public class RulesServiceImpl implements RulesService {
                 .forEach(this::createOrUpdateRule);
     }
 
-    @Scheduled(fixedRate = 50000)
+    @Scheduled(fixedRate = 500000)
     public void refreshRules() {
         InternalKnowledgeBase kbaseTmp = rulesConfiguration.kbase();
         KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.kbuilder();
@@ -252,6 +252,7 @@ public class RulesServiceImpl implements RulesService {
 
 
     private void validateServiceRequest(RuleServiceRequest ruleServiceRequest) throws Exception {
+        LOGGER.info(ruleServiceRequest.toString());
         if(ruleServiceRequest.getServiceName() == null
                 || ruleServiceRequest.getEnvironment() == null
                 || ruleServiceRequest.getRuleName() == null

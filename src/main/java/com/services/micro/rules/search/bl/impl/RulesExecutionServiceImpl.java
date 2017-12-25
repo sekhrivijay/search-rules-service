@@ -5,8 +5,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.micro.services.search.api.SearchModelWrapper;
 import com.services.micro.rules.search.bl.RulesExecutionService;
 import com.services.micro.rules.search.config.RulesConfiguration;
-import com.services.micro.rules.search.config.RulesConfigurationProperties;
-import org.drools.core.impl.InternalKnowledgeBase;
+import com.services.micro.rules.search.config.AppConfig;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Service;
 
 @Service(value = "RulesExecutionService")
-@EnableConfigurationProperties(RulesConfigurationProperties.class)
+@EnableConfigurationProperties(AppConfig.class)
 public class RulesExecutionServiceImpl implements RulesExecutionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionServiceImpl.class);

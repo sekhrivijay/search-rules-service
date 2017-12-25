@@ -1,5 +1,7 @@
 package com.services.micro.rules.search.api.request;
 
+import com.services.micro.rules.search.api.Status;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,7 @@ public class RuleServiceRequest implements Serializable  {
     private String serviceName;
     private String ruleName;
     private String packageName;
+    private Status status = Status.DEFAULT;
     private String rule;
     private Map<String, String> metaData = new HashMap<>();
 
@@ -69,6 +72,14 @@ public class RuleServiceRequest implements Serializable  {
         this.id = id;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "RuleServiceRequest{" +
@@ -77,65 +88,9 @@ public class RuleServiceRequest implements Serializable  {
                 ", ruleName='" + ruleName + '\'' +
                 ", packageName='" + packageName + '\'' +
                 ", rule='" + rule + '\'' +
+                ", status='" + status + '\'' +
                 ", metaData=" + metaData +
                 '}';
     }
 
-
-    public static final class RuleServiceRequestBuilder {
-        private String environment;
-        private String serviceName;
-        private String ruleName;
-        private String packageName;
-        private String rule;
-        private Map<String, String> metaData = new HashMap<>();
-
-        private RuleServiceRequestBuilder() {
-        }
-
-        public static RuleServiceRequestBuilder aRuleServiceRequest() {
-            return new RuleServiceRequestBuilder();
-        }
-
-        public RuleServiceRequestBuilder withEnvironment(String environment) {
-            this.environment = environment;
-            return this;
-        }
-
-        public RuleServiceRequestBuilder withServiceName(String serviceName) {
-            this.serviceName = serviceName;
-            return this;
-        }
-
-        public RuleServiceRequestBuilder withRuleName(String ruleName) {
-            this.ruleName = ruleName;
-            return this;
-        }
-
-        public RuleServiceRequestBuilder withPackageName(String packageName) {
-            this.packageName = packageName;
-            return this;
-        }
-
-        public RuleServiceRequestBuilder withRule(String rule) {
-            this.rule = rule;
-            return this;
-        }
-
-        public RuleServiceRequestBuilder withMetaData(Map<String, String> metaData) {
-            this.metaData = metaData;
-            return this;
-        }
-
-        public RuleServiceRequest build() {
-            RuleServiceRequest ruleServiceRequest = new RuleServiceRequest();
-            ruleServiceRequest.setEnvironment(environment);
-            ruleServiceRequest.setServiceName(serviceName);
-            ruleServiceRequest.setRuleName(ruleName);
-            ruleServiceRequest.setPackageName(packageName);
-            ruleServiceRequest.setRule(rule);
-            ruleServiceRequest.setMetaData(metaData);
-            return ruleServiceRequest;
-        }
-    }
 }

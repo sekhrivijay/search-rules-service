@@ -1,5 +1,6 @@
 package com.services.micro.rules.search.resource;
 
+import com.google.gson.Gson;
 import com.services.micro.rules.search.api.request.RuleServiceRequest;
 import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
@@ -21,6 +22,7 @@ public class RulesResource {
 
     @PostMapping("/")
     public RuleServiceResponse createRule(@RequestBody RuleServiceRequest ruleServiceRequest) throws Exception {
+        System.out.println("request .... " + new Gson().toJson(ruleServiceRequest));
         return rulesService.create(ruleServiceRequest);
     }
 

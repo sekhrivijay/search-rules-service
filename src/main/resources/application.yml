@@ -43,43 +43,46 @@ logging:
 
 
 service:
+  ruleStatusList:
+    - active
+    - inactive
   metrics:
     dropwizard:
       enabled: false
     prometheus:
       enabled: false
   git:
-    enabled: false
+    enabled: true
   vip:
     enabled: false
   swagger:
     enabled: false
   logging:
-    enabled: false
+    enabled: true
 
 
 
-management:
-  security:
-    enabled: false
-
-hystrix:
-  command:
-    helloCommandKey:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 10000
-      circuitBreaker:
-        requestVolumeThreshold: 4
-        sleepWindowInMilliseconds: 60000
-      metrics:
-        rollingStats:
-          timeInMilliseconds: 180000
-  threadpool:
-    helloThreadPoolKey:
-      coreSize: 30
-      metrics:
-        rollingStats:
-          timeInMilliseconds:18000
+#management:
+#  security:
+#    enabled: false
+#
+#hystrix:
+#  command:
+#    helloCommandKey:
+#      execution:
+#        isolation:
+#          thread:
+#            timeoutInMilliseconds: 10000
+#      circuitBreaker:
+#        requestVolumeThreshold: 4
+#        sleepWindowInMilliseconds: 60000
+#      metrics:
+#        rollingStats:
+#          timeInMilliseconds: 180000
+#  threadpool:
+#    helloThreadPoolKey:
+#      coreSize: 30
+#      metrics:
+#        rollingStats:
+#          timeInMilliseconds:18000
 

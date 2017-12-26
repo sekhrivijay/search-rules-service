@@ -2,13 +2,13 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: rule-service-group
+  name: search-rule-service-group
   namespace: default
 spec:
   scaleTargetRef:
     apiVersion: apps/v1beta1
     kind: Deployment
-    name: rule-service-group
+    name: search-rule-service-group
   minReplicas: 1
   maxReplicas: 2
   metrics:

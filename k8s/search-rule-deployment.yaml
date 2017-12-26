@@ -2,24 +2,24 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: rule-service-group
+  name: search-rule-service-group
   labels:
-    app: rule
+    app: search-rule
     ns: group
 spec:
   selector:
     matchLabels:
-      app: rule
+      app: search-rule
       ns: group
   replicas: 1
   template:
     metadata:
       labels:
-        app: rule
+        app: search-rule
         ns: group
     spec:
       containers:
-      - name: rule-service
+      - name: search-rule-service
         imagePullPolicy: Always
         image: "gcr.io/deep-thought-185318/rule-service:latest"
         resources:

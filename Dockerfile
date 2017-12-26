@@ -4,4 +4,5 @@ ADD target/*.jar /
 ADD src/main/resources /resources
 ADD entrypoint.sh /entrypoint.sh
 ENV PATH /:$PATH
-ENTRYPOINT ["entrypoint.sh"]
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

@@ -8,7 +8,7 @@ metadata:
 spec:
   ports:
   - port: 8070
-    targetPort: 8070
+    targetPort: 8080
     name: server
   selector:
     app: search-rules

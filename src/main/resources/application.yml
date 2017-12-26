@@ -3,7 +3,7 @@ server:
   tomcat:
     accesslog:
       enabled: false
-  port: 8070
+  port: 8080
 
 spring:
   application:

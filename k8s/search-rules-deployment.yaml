@@ -33,7 +33,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: "group"
         - name: SPRING_DATA_MONGODB_URI
-          value: "mongodb://mongodb-1-server-1:27017/searchrules"
+          value: "mongodb://mongo-service-group.default.svc.cluster.local:27017/searchrules"
         livenessProbe:
           httpGet:
             path: /health
@@ -42,7 +42,7 @@ spec:
           periodSeconds: 5
         readinessProbe:
           httpGet:
-            path: "api/rules/query?environment=t"
+            path: "/api/rules/query?environment=t"
             port: 8080
           initialDelaySeconds: 30
           periodSeconds: 10

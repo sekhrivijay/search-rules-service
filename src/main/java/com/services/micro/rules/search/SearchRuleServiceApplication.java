@@ -13,8 +13,6 @@ import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboar
 @EnableCaching
 @EnableCircuitBreaker
 @EnableHystrixDashboard
-@EnableConfigServer
-@EnableAutoConfiguration(exclude = {SolrAutoConfiguration.class})
 public class SearchRuleServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(SearchRuleServiceApplication.class, args);

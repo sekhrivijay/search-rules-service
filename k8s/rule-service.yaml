@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service-group
+  labels:
+    app: search
+spec:
+  ports:
+  - port: 8070
+    targetPort: 8070
+    name: server
+  selector:
+    app: search
+    ns: group
+  type: ClusterIP

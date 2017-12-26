@@ -55,13 +55,13 @@ service:
   ruleReloadRate: 180000
   metrics:
     dropwizard:
-      enabled: false
+      enabled: true
     prometheus:
-      enabled: false
+      enabled: true
+    jmx:
+      enabled: true
   git:
     enabled: true
-  vip:
-    enabled: false
   swagger:
     enabled: true
   logging:

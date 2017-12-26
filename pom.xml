@@ -69,21 +69,12 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>com.services.micro.commons</groupId>
             <artifactId>commons-metric</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.services.micro.commons</groupId>
-            <artifactId>commons-vip</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
@@ -126,15 +117,11 @@
             <artifactId>kie-internal</artifactId>
             <version>${drools.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.solr</groupId>
-            <artifactId>solr-solrj</artifactId>
-            <version>7.0.0</version>
-        </dependency>
+
         <dependency>
             <groupId>com.services.micro</groupId>
             <artifactId>generic-search</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>0.0.1</version>
             <classifier>client</classifier>
         </dependency>
 

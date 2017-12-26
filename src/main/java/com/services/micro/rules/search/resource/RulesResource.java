@@ -1,6 +1,5 @@
 package com.services.micro.rules.search.resource;
 
-import com.google.gson.Gson;
 import com.services.micro.rules.search.api.RuleEntity;
 import com.services.micro.rules.search.bl.RulesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ public class RulesResource {
 
     @PostMapping("/")
     public RuleEntity createRule(@RequestBody RuleEntity ruleEntity) throws Exception {
-        System.out.println("request .... " + new Gson().toJson(ruleEntity));
         return rulesService.create(ruleEntity);
     }
 

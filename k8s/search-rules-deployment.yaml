@@ -33,7 +33,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: "group"
         - name: SPRING_DATA_MONGODB_URI
-          value: "mongodb://mongo-service-group.default.svc.cluster.local:27017/searchrules"
+          value: "mongodb://mongo-service-group.default.svc.cluster:27017/searchrules"
         livenessProbe:
           httpGet:
             path: /health

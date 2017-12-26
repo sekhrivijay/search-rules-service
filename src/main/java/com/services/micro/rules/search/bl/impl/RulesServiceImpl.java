@@ -3,15 +3,15 @@ package com.services.micro.rules.search.bl.impl;
 
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Timed;
+import com.micro.services.search.config.GlobalConstants;
+import com.services.micro.rules.search.api.RuleEntity;
 import com.services.micro.rules.search.api.Status;
-import com.services.micro.rules.search.api.request.RuleServiceRequest;
-import com.services.micro.rules.search.api.response.RuleServiceResponse;
 import com.services.micro.rules.search.bl.RulesService;
 import com.services.micro.rules.search.bl.repository.RuleRepository;
 import com.services.micro.rules.search.config.AppConfig;
 import com.services.micro.rules.search.config.RulesConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.drools.core.impl.InternalKnowledgeBase;
-import org.kie.api.definition.rule.Rule;
 import org.kie.api.io.Resource;
 import org.kie.api.io.ResourceType;
 import org.kie.internal.builder.KnowledgeBuilder;
@@ -50,36 +50,30 @@ public class RulesServiceImpl implements RulesService {
 
     @PostConstruct
     public void loadRules() {
-//        ruleRepository
-//                .findAll()
-//                .forEach(this::createOrUpdateRule);
-//    }
         appConfig.getRuleStatusList()
                 .forEach(status ->
                         ruleRepository
                                 .findByStatus(Status.getStatus(status))
-                                .forEach(this::createOrUpdateRule));
+                                .forEach(this::createOrUpdateRuleInKBase));
     }
 
 
-    @Scheduled(fixedRate = 500000)
+    @Scheduled(fixedRate = 15000)
     public void refreshRules() {
+        LOGGER.info("Reloading all rules ..");
         InternalKnowledgeBase kbaseTmp = rulesConfiguration.kbase();
         KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.kbuilder();
-//        ruleRepository
-//                .findAll()
-//                .forEach(ruleServiceRequest -> refresh(ruleServiceRequest, knowledgeBuilderTmp, kbaseTmp));
         appConfig.getRuleStatusList()
                 .forEach(status ->
                         ruleRepository
                                 .findByStatus(Status.getStatus(status))
-                                .forEach(ruleServiceRequest -> refresh(ruleServiceRequest, knowledgeBuilderTmp, kbaseTmp)));
+                                .forEach(ruleEntity -> refresh(ruleEntity, knowledgeBuilderTmp, kbaseTmp)));
         rulesConfiguration.setKbase(kbaseTmp);
         rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
     }
 
-    private void refresh(RuleServiceRequest ruleServiceRequest, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
-        createOrUpdateRule(ruleServiceRequest, kbuilder, kbase);
+    private void refresh(RuleEntity ruleEntity, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+        createOrUpdateRuleInKBase(ruleEntity, kbuilder, kbase);
     }
 
 
@@ -91,52 +85,82 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public RuleServiceResponse create(RuleServiceRequest ruleServiceRequest) throws Exception {
-        validateServiceRequest(ruleServiceRequest);
-        RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
-        if (ruleServiceRequestFromDb != null) {
+    public RuleEntity create(RuleEntity ruleEntityFromClient) throws Exception {
+        validateServiceRequest(ruleEntityFromClient);
+        RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
+        if (ruleEntityFromDB != null) {
             throw new Exception("A rule with same ruleName , packageName, serviceName and environment already exist");
         }
-        createOrUpdateRule(ruleServiceRequest);
-        ruleRepository.save(ruleServiceRequest);
-        return buildRuleServiceResponse(ruleServiceRequest, getRuleServiceRequestFromDb(ruleServiceRequest));
+
+        createOrUpdateRuleInKBase(ruleEntityFromClient);
+        return ruleRepository.save(ruleEntityFromClient);
     }
 
-    private Resource getResource(RuleServiceRequest ruleServiceRequest) {
-        return ResourceFactory.newByteArrayResource(ruleServiceRequest.getRule().getBytes());
+
+    private Resource getResource(RuleEntity ruleEntity) {
+        return ResourceFactory.newByteArrayResource(ruleEntity.getRule().getBytes());
     }
 
     @Override
     @Timed
     @ExceptionMetered
-    public RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception {
-        validateServiceRequest(ruleServiceRequest);
-        RuleServiceRequest ruleServiceRequestFromDb = getRuleServiceRequestFromDb(ruleServiceRequest);
-        Rule rule = rulesConfiguration.getKbase().getRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
-        if (ruleServiceRequestFromDb == null || rule == null) {
-            throw new Exception("Rule could not be found");
+    public List<RuleEntity> read() throws Exception {
+        return ruleRepository.findAll();
+    }
+
+
+    @Override
+    @Timed
+    @ExceptionMetered
+    public List<RuleEntity> read(RuleEntity ruleEntityFromClient) throws Exception {
+//        validateServiceRequest(ruleEntityFromClient);
+        return ruleRepository.findByPackageNameLikeAndRuleNameLikeAndServiceNameLikeAndEnvironmentLike(
+                StringUtils.defaultString(ruleEntityFromClient.getPackageName(), GlobalConstants.STAR),
+                StringUtils.defaultString(ruleEntityFromClient.getRuleName(), GlobalConstants.STAR),
+                StringUtils.defaultString(ruleEntityFromClient.getServiceName(), GlobalConstants.STAR),
+                StringUtils.defaultString(ruleEntityFromClient.getEnvironment(), GlobalConstants.STAR));
+//        RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
+//        Rule rule = rulesConfiguration.getKbase().getRule(ruleEntityFromClient.getPackageName(), ruleEntityFromClient.getRuleName());
+//        if (ruleEntityFromDB == null || rule == null) {
+//            throw new Exception("Rule could not be found");
+//        }
+//        return ruleEntityFromDB;
+    }
+
+    @Override
+    @Timed
+    @ExceptionMetered
+    public RuleEntity readById(String id) throws Exception {
+        RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
+        if (ruleEntityFromDB == null) {
+            return null;
+        }
+        return ruleEntityFromDB;
+    }
+
+    @Override
+    @Timed
+    @ExceptionMetered
+    public RuleEntity update(String id, RuleEntity ruleEntityFromClient) throws Exception {
+        RuleEntity ruleEntityFromDB = delete(id);
+        if (ruleEntityFromDB == null) {
+            return null;
+        }
+        return create(ruleEntityFromClient);
+    }
+
+    @Override
+    @Timed
+    @ExceptionMetered
+    public RuleEntity delete(String id) throws Exception {
+        RuleEntity ruleEntityFromDB = readById(id);
+        if (ruleEntityFromDB == null) {
+            return null;
         }
 
-        return buildRuleServiceResponse(ruleServiceRequest, ruleServiceRequestFromDb);
-    }
-
-    @Override
-    @Timed
-    @ExceptionMetered
-    public RuleServiceResponse update(RuleServiceRequest ruleServiceRequest) throws Exception {
-        delete(ruleServiceRequest);
-        return create(ruleServiceRequest);
-    }
-
-    @Override
-    @Timed
-    @ExceptionMetered
-    public RuleServiceResponse delete(RuleServiceRequest ruleServiceRequest) throws Exception {
-        validateServiceRequest(ruleServiceRequest);
-
-        rulesConfiguration.getKbase().removeRule(ruleServiceRequest.getPackageName(), ruleServiceRequest.getRuleName());
-        ruleRepository.delete(getRuleServiceRequestFromDb(ruleServiceRequest));
-        return null;
+        rulesConfiguration.getKbase().removeRule(ruleEntityFromDB.getPackageName(), ruleEntityFromDB.getRuleName());
+        ruleRepository.delete(id);
+        return ruleEntityFromDB;
     }
 
 
@@ -174,43 +198,44 @@ public class RulesServiceImpl implements RulesService {
 //    }
 
 
-    private RuleServiceResponse buildRuleServiceResponse(RuleServiceRequest ruleServiceRequest, RuleServiceRequest ruleServiceRequestFromDb) {
-        return RuleServiceResponse.RuleServiceResponseBuilder.aRuleServiceResponse()
-                .withEnvironment(ruleServiceRequest.getEnvironment())
-                .withMetaData(ruleServiceRequest.getMetaData())
-                .withServiceName(ruleServiceRequest.getServiceName())
-                .withPackageName(ruleServiceRequest.getPackageName())
-                .withRuleName(ruleServiceRequest.getRuleName())
-                .withRule(ruleServiceRequestFromDb.getRule())
-                .build();
-    }
+//    private RuleServiceResponse buildRuleServiceResponse(RuleServiceRequest ruleServiceRequest, RuleEntity ruleEntity) {
+//        return new RuleServiceResponse(ruleEntity);
+////        return RuleServiceResponse.RuleServiceResponseBuilder.aRuleServiceResponse()
+////                .withEnvironment(ruleServiceRequest.getEnvironment())
+////                .withMetaData(ruleServiceRequest.getMetaData())
+////                .withServiceName(ruleServiceRequest.getServiceName())
+////                .withPackageName(ruleServiceRequest.getPackageName())
+////                .withRuleName(ruleServiceRequest.getRuleName())
+////                .withRule(ruleServiceRequestFromDb.getRule())
+////                .build();
+//    }
 
-    private RuleServiceRequest getRuleServiceRequestFromDb(RuleServiceRequest ruleServiceRequest) {
+    private RuleEntity getRuleEntityFromDB(RuleEntity ruleEntity) {
         return ruleRepository.findByPackageNameAndRuleNameAndServiceNameAndEnvironment(
-                ruleServiceRequest.getPackageName(),
-                ruleServiceRequest.getRuleName(),
-                ruleServiceRequest.getServiceName(),
-                ruleServiceRequest.getEnvironment());
+                ruleEntity.getPackageName(),
+                ruleEntity.getRuleName(),
+                ruleEntity.getServiceName(),
+                ruleEntity.getEnvironment());
     }
 
 
-    private void createOrUpdateRule(RuleServiceRequest ruleServiceRequest) {
-        createOrUpdateRule(ruleServiceRequest, rulesConfiguration.getKbuilder(), rulesConfiguration.getKbase());
+    private void createOrUpdateRuleInKBase(RuleEntity ruleEntity) {
+        createOrUpdateRuleInKBase(ruleEntity, rulesConfiguration.getKbuilder(), rulesConfiguration.getKbase());
     }
 
-    private void createOrUpdateRule(RuleServiceRequest ruleServiceRequest, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
-        LOGGER.info("Adding rule into knowledge base " + ruleServiceRequest);
-        createOrUpdateRule(getResource(ruleServiceRequest), kbuilder, kbase);
+    private void createOrUpdateRuleInKBase(RuleEntity ruleEntity, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+        LOGGER.info("Adding rule into knowledge base " + ruleEntity);
+        createOrUpdateRuleInKBase(getResource(ruleEntity), kbuilder, kbase);
     }
 
 
-    private void createOrUpdateRule(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+    private void createOrUpdateRuleInKBase(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
         kbuilder.add(resource, ResourceType.DRL);
         kbase.addPackages(kbuilder.getKnowledgePackages());
     }
 
 
-    private void validateServiceRequest(RuleServiceRequest ruleServiceRequest) throws Exception {
+    private void validateServiceRequest(RuleEntity ruleServiceRequest) throws Exception {
         LOGGER.info(ruleServiceRequest.toString());
         if (ruleServiceRequest.getServiceName() == null
                 || ruleServiceRequest.getEnvironment() == null

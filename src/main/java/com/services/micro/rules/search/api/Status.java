@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 public enum Status implements Serializable {
     ACTIVE("active"),
-    INACTIVE("inactive"),
-    DEFAULT("inactive");
+    INACTIVE("inactive");
 
     private String name;
 
@@ -23,7 +22,7 @@ public enum Status implements Serializable {
                 return status;
             }
         }
-        return DEFAULT;
+        return INACTIVE;
     }
 
     @Override

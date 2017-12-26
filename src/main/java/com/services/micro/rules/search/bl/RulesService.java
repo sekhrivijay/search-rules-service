@@ -1,14 +1,19 @@
 package com.services.micro.rules.search.bl;
 
-import com.services.micro.rules.search.api.request.RuleServiceRequest;
-import com.services.micro.rules.search.api.response.RuleServiceResponse;
+import com.services.micro.rules.search.api.RuleEntity;
+
+import java.util.List;
 
 public interface RulesService {
-//    RuleServiceResponse getResponse(String key);
-//    RuleServiceResponse getResponse();
+    RuleEntity create(RuleEntity ruleEntity) throws Exception;
 
-    RuleServiceResponse create(RuleServiceRequest ruleServiceRequest) throws Exception;
-    RuleServiceResponse read(RuleServiceRequest ruleServiceRequest) throws Exception;
-    RuleServiceResponse update(RuleServiceRequest ruleServiceRequest) throws Exception;
-    RuleServiceResponse delete(RuleServiceRequest ruleServiceRequest) throws Exception;
+    List<RuleEntity> read(RuleEntity ruleEntity) throws Exception;
+
+    List<RuleEntity> read() throws Exception;
+
+    RuleEntity readById(String id) throws Exception;
+
+    RuleEntity update(String id, RuleEntity ruleEntity) throws Exception;
+
+    RuleEntity delete(String id) throws Exception;
 }

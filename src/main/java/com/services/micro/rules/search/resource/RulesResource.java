@@ -35,7 +35,7 @@ public class RulesResource {
         return rulesService.create(ruleEntity);
     }
 
-    @PutMapping("/")
+    @PutMapping("/{id}")
     public ResponseEntity<RuleEntity> updateRule(@PathVariable String id,
                                                  @RequestBody RuleEntity ruleEntity) throws Exception {
         return buildResponse(rulesService.update(id, ruleEntity));

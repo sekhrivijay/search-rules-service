@@ -16,12 +16,12 @@ public class RulesConfiguration {
 
     @Bean
     public InternalKnowledgeBase kbase() {
-        return KnowledgeBaseFactory.newKnowledgeBase();
+        return createNewInternalKnowledgeBase();
     }
 
     @Bean
-    public KnowledgeBuilder kbuilder(){
-        return KnowledgeBuilderFactory.newKnowledgeBuilder();
+    public KnowledgeBuilder kbuilder() {
+        return createNewKnowledgeBuilder();
     }
 
     public InternalKnowledgeBase getKbase() {
@@ -40,5 +40,13 @@ public class RulesConfiguration {
     @Autowired
     public void setKbuilder(KnowledgeBuilder kbuilder) {
         this.kbuilder = kbuilder;
+    }
+
+    public InternalKnowledgeBase createNewInternalKnowledgeBase() {
+        return KnowledgeBaseFactory.newKnowledgeBase();
+    }
+
+    public KnowledgeBuilder createNewKnowledgeBuilder() {
+        return KnowledgeBuilderFactory.newKnowledgeBuilder();
     }
 }

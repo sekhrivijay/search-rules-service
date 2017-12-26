@@ -19,18 +19,12 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionServiceImpl.class);
 
-//    private InternalKnowledgeBase kbase;
     private RulesConfiguration rulesConfiguration;
 
     @Autowired
     public void setRulesConfiguration(RulesConfiguration rulesConfiguration) {
         this.rulesConfiguration = rulesConfiguration;
     }
-//
-//    @Autowired
-//    public void setKbase(InternalKnowledgeBase kbase) {
-//        this.kbase = kbase;
-//    }
 
 
     @Override
@@ -58,7 +52,7 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
             knowledgeSession.fireAllRules();
 
 
-            LOGGER.info("OUTSIDE   " + searchModelWrapper.toString());
+            LOGGER.info("Rule execution completed ..   " + searchModelWrapper.toString());
         } catch (Throwable t) {
             LOGGER.error("Could not execute rule ", t);
         } finally {

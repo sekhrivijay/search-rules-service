@@ -58,11 +58,12 @@ public class RulesServiceImpl implements RulesService {
     }
 
 
-    @Scheduled(fixedRate = 15000)
+    @Scheduled(fixedRateString = "${service.ruleReloadRate}")
     public void refreshRules() {
         LOGGER.info("Reloading all rules ..");
-        InternalKnowledgeBase kbaseTmp = rulesConfiguration.kbase();
-        KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.kbuilder();
+        InternalKnowledgeBase kbaseTmp = rulesConfiguration.createNewInternalKnowledgeBase();
+        KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.createNewKnowledgeBuilder();
+
         appConfig.getRuleStatusList()
                 .forEach(status ->
                         ruleRepository
@@ -113,18 +114,11 @@ public class RulesServiceImpl implements RulesService {
     @Timed
     @ExceptionMetered
     public List<RuleEntity> read(RuleEntity ruleEntityFromClient) throws Exception {
-//        validateServiceRequest(ruleEntityFromClient);
         return ruleRepository.findByPackageNameLikeAndRuleNameLikeAndServiceNameLikeAndEnvironmentLike(
                 StringUtils.defaultString(ruleEntityFromClient.getPackageName(), GlobalConstants.STAR),
                 StringUtils.defaultString(ruleEntityFromClient.getRuleName(), GlobalConstants.STAR),
                 StringUtils.defaultString(ruleEntityFromClient.getServiceName(), GlobalConstants.STAR),
                 StringUtils.defaultString(ruleEntityFromClient.getEnvironment(), GlobalConstants.STAR));
-//        RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
-//        Rule rule = rulesConfiguration.getKbase().getRule(ruleEntityFromClient.getPackageName(), ruleEntityFromClient.getRuleName());
-//        if (ruleEntityFromDB == null || rule == null) {
-//            throw new Exception("Rule could not be found");
-//        }
-//        return ruleEntityFromDB;
     }
 
     @Override
@@ -158,57 +152,11 @@ public class RulesServiceImpl implements RulesService {
             return null;
         }
 
+
         rulesConfiguration.getKbase().removeRule(ruleEntityFromDB.getPackageName(), ruleEntityFromDB.getRuleName());
         ruleRepository.delete(id);
         return ruleEntityFromDB;
     }
-
-
-//    public void executePost(String key) {
-//        KieSession knowledgeSession = null;
-//        try {
-//
-//            knowledgeSession = rulesConfiguration.getKbase().newKieSession();
-//
-//            // 4 - create and assert some facts
-////            Person rocky = new Person("Rocky Balboa", "Philadelphia", 35);
-//
-////            knowledgeSession.insert(rocky);
-//            final Message message = new Message();
-//            message.setMessage( "Hello World" );
-//            if (key.equals("test1")) {
-//                message.setStatus(Message.HELLO);
-//            }else {
-//                message.setStatus(Message.GOODBYE);
-//
-//            }
-//
-//            knowledgeSession.insert( message );
-////            knowledgeSession.insert("vijay");
-//
-//            // 5 - fire the rules
-//            knowledgeSession.fireAllRules();
-//
-//            System.out.println(message);
-//        } catch (Throwable t) {
-//            t.printStackTrace();
-//        } finally {
-//            knowledgeSession.dispose();
-//        }
-//    }
-
-
-//    private RuleServiceResponse buildRuleServiceResponse(RuleServiceRequest ruleServiceRequest, RuleEntity ruleEntity) {
-//        return new RuleServiceResponse(ruleEntity);
-////        return RuleServiceResponse.RuleServiceResponseBuilder.aRuleServiceResponse()
-////                .withEnvironment(ruleServiceRequest.getEnvironment())
-////                .withMetaData(ruleServiceRequest.getMetaData())
-////                .withServiceName(ruleServiceRequest.getServiceName())
-////                .withPackageName(ruleServiceRequest.getPackageName())
-////                .withRuleName(ruleServiceRequest.getRuleName())
-////                .withRule(ruleServiceRequestFromDb.getRule())
-////                .build();
-//    }
 
     private RuleEntity getRuleEntityFromDB(RuleEntity ruleEntity) {
         return ruleRepository.findByPackageNameAndRuleNameAndServiceNameAndEnvironment(
@@ -223,7 +171,9 @@ public class RulesServiceImpl implements RulesService {
         createOrUpdateRuleInKBase(ruleEntity, rulesConfiguration.getKbuilder(), rulesConfiguration.getKbase());
     }
 
-    private void createOrUpdateRuleInKBase(RuleEntity ruleEntity, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
+    private void createOrUpdateRuleInKBase(RuleEntity ruleEntity,
+                                           KnowledgeBuilder kbuilder,
+                                           InternalKnowledgeBase kbase) {
         LOGGER.info("Adding rule into knowledge base " + ruleEntity);
         createOrUpdateRuleInKBase(getResource(ruleEntity), kbuilder, kbase);
     }
@@ -237,62 +187,15 @@ public class RulesServiceImpl implements RulesService {
 
     private void validateServiceRequest(RuleEntity ruleServiceRequest) throws Exception {
         LOGGER.info(ruleServiceRequest.toString());
-        if (ruleServiceRequest.getServiceName() == null
-                || ruleServiceRequest.getEnvironment() == null
-                || ruleServiceRequest.getRuleName() == null
-                || ruleServiceRequest.getPackageName() == null) {
-            throw new Exception("Missing mandatory fields. All 4 fields serviceName, environment, ruleName and packageName are required");
-        }
-
-    }
-
-
-    public static class Message {
-        public static final int HELLO = 0;
-        public static final int GOODBYE = 1;
-
-        private String message;
-
-        private int status;
-
-        public Message() {
-
-        }
-
-        public String getMessage() {
-            return this.message;
-        }
-
-        public void setMessage(final String message) {
-            this.message = message;
-        }
-
-        public int getStatus() {
-            return this.status;
-        }
-
-        public void setStatus(final int status) {
-            this.status = status;
-        }
-
-        public static Message doSomething(Message message) {
-            return message;
-        }
-
-        public boolean isSomething(String msg,
-                                   List<Object> list) {
-            list.add(this);
-            return this.message.equals(msg);
-        }
-
-        @Override
-        public String toString() {
-            return "Message{" +
-                    "message='" + message + '\'' +
-                    ", status=" + status +
-                    '}';
+        if (StringUtils.isEmpty(ruleServiceRequest.getServiceName())
+                || StringUtils.isEmpty(ruleServiceRequest.getEnvironment())
+                || StringUtils.isEmpty(ruleServiceRequest.getRuleName())
+                || StringUtils.isEmpty(ruleServiceRequest.getPackageName())) {
+            throw new Exception("Missing mandatory fields. " +
+                    "All 4 fields serviceName, environment, ruleName and packageName are required");
         }
     }
+
 
 }
 

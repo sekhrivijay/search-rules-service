@@ -52,6 +52,7 @@ service:
   ruleStatusList:
     - active
     - inactive
+  ruleReloadRate: 180000
   metrics:
     dropwizard:
       enabled: false
@@ -62,7 +63,7 @@ service:
   vip:
     enabled: false
   swagger:
-    enabled: false
+    enabled: true
   logging:
     enabled: true
 

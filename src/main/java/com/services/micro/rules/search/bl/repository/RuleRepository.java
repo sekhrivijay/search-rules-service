@@ -11,7 +11,15 @@ public interface RuleRepository extends MongoRepository<RuleEntity, String> {
 
     List<RuleEntity> findByStatus(Status status);
 
-    RuleEntity findByPackageNameAndRuleNameAndServiceNameAndEnvironment(String packageName, String ruleName, String serviceName, String environment);
+    RuleEntity findByPackageNameAndRuleNameAndServiceNameAndEnvironment(
+            String packageName,
+            String ruleName,
+            String serviceName,
+            String environment);
 
-    List<RuleEntity> findByPackageNameLikeAndRuleNameLikeAndServiceNameLikeAndEnvironmentLike(String packageName, String ruleName, String serviceName, String environment);
+    List<RuleEntity> findByPackageNameLikeAndRuleNameLikeAndServiceNameLikeAndEnvironmentLike(
+            String packageName,
+            String ruleName,
+            String serviceName,
+            String environment);
 }

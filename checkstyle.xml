@@ -128,7 +128,7 @@
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceAfter"/>
         <module name="NoWhitespaceBefore"/>
-        <module name="OperatorWrap"/>
+        <!--<module name="OperatorWrap"/>-->
         <module name="ParenPad"/>
         <module name="TypecastParenPad"/>
         <module name="WhitespaceAfter"/>
@@ -152,9 +152,11 @@
         <module name="AvoidInlineConditionals"/>
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
-        <module name="HiddenField">
-            <property name="ignoreSetter" value="true" />
-        </module>
+        <!--<module name="HiddenField">-->
+        <!--<property name="ignoreFormat" value="with.*"/>-->
+        <!--<property name="ignoreSetter" value="true" />-->
+        <!--<property name="ignoreConstructorParameter" value="true" />-->
+        <!--</module>-->
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
         <module name="MagicNumber"/>

@@ -3,7 +3,6 @@ package com.services.micro.rules.search.test;
 import com.micro.services.search.api.SearchModelWrapper;
 import com.micro.services.search.api.request.SearchServiceRequest;
 import com.micro.services.search.api.response.SearchServiceResponse;
-import com.services.micro.rules.search.bl.impl.RulesServiceImpl;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.kie.api.definition.KiePackage;
@@ -27,38 +26,38 @@ public class Test {
         KieSession knowledgeSession = null;
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-        String q = "package DE\n" +
-                "\n" +
-                "import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;\n" +
-                "\n" +
-                "global java.util.List list\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "rule \"GGGG World\"\n" +
-                "    dialect \"mvel\"\n" +
-                "    when\n" +
-                "        m : Message( status == Message.GOODBYE, message : message )\n" +
-                "    then\n" +
-                "        System.out.println( message );\n" +
-                "    modify ( m ) { message = \"Goodbye cruel world CHANGEDD........\",\n" +
-                "                   status = Message.HELLO };\n" +
-                "end\n";
+//        String q = "package DE\n" +
+//                "\n" +
+//                "import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;\n" +
+//                "\n" +
+//                "global java.util.List list\n" +
+//                "\n" +
+//                "\n" +
+//                "\n" +
+//                "\n" +
+//                "rule \"GGGG World\"\n" +
+//                "    dialect \"mvel\"\n" +
+//                "    when\n" +
+//                "        m : Message( status == Message.GOODBYE, message : message )\n" +
+//                "    then\n" +
+//                "        System.out.println( message );\n" +
+//                "    modify ( m ) { message = \"Goodbye cruel world CHANGEDD........\",\n" +
+//                "                   status = Message.HELLO };\n" +
+//                "end\n";
+//
+//        String w = "package com.services.micro.rules.search.test\n" +
+//                " \n" +
+//                "import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;\n" +
+//                " \n" +
+//                "rule \"Hello World\"\n" +
+//                "    when\n" +
+//                "        m : Message( status == Message.HELLO, message : message)\n" +
+//                "    then\n" +
+//                "        System.out.println( message );\n" +
+//                "end";
 
-        String w = "package com.services.micro.rules.search.test\n" +
-                " \n" +
-                "import com.services.micro.rules.search.bl.impl.RulesServiceImpl.Message;\n" +
-                " \n" +
-                "rule \"Hello World\"\n" +
-                "    when\n" +
-                "        m : Message( status == Message.HELLO, message : message)\n" +
-                "    then\n" +
-                "        System.out.println( message );\n" +
-                "end";
 
-
-        String r ="package droolsexample\n" +
+        String r = "package droolsexample\n" +
                 "\n" +
                 "import com.micro.services.search.api.request.SearchServiceRequest;\n" +
                 "import com.micro.services.search.api.response.SearchServiceResponse;\n" +
@@ -96,27 +95,25 @@ public class Test {
 
 
         knowledgeSession = kbase.newKieSession();
-        final RulesServiceImpl.Message message = new RulesServiceImpl.Message();
-        message.setMessage("Hello aaaaaWorld");
-        message.setStatus(RulesServiceImpl.Message.HELLO);
+//        final RulesServiceImpl.Message message = new RulesServiceImpl.Message();
+//        message.setMessage("Hello aaaaaWorld");
+//        message.setStatus(RulesServiceImpl.Message.HELLO);
 
         SearchServiceRequest searchServiceRequest = new SearchServiceRequest();
         searchServiceRequest.setQ("roses");
         SearchServiceResponse searchServiceResponse = new SearchServiceResponse();
-        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
+//        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
 //        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
 //        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
 
 
 //        knowledgeSession.insert( message );
-        knowledgeSession.insert( searchServiceRequest );
-        knowledgeSession.insert( searchServiceResponse );
+        knowledgeSession.insert(searchServiceRequest);
+        knowledgeSession.insert(searchServiceResponse);
         knowledgeSession.fireAllRules();
 //        System.out.println("OUTSIDE.................." + message);
         System.out.println("OUTSIDE.................." + searchServiceRequest);
         System.out.println("OUTSIDE.................." + searchServiceResponse);
-
-
 
 
     }
@@ -145,10 +142,10 @@ public class Test {
 //            knowledgeSession.insert(searchModelWrapper.getSearchServiceRequest());
 //            knowledgeSession.insert(searchModelWrapper.getSearchServiceResponse());
 
-            final RulesServiceImpl.Message message = new RulesServiceImpl.Message();
-            message.setMessage("Hello World");
-            message.setStatus(RulesServiceImpl.Message.HELLO);
-            knowledgeSession.insert(message);
+//            final RulesServiceImpl.Message message = new RulesServiceImpl.Message();
+//            message.setMessage("Hello World");
+//            message.setStatus(RulesServiceImpl.Message.HELLO);
+//            knowledgeSession.insert(message);
 
             knowledgeSession.fireAllRules();
 
@@ -166,8 +163,8 @@ public class Test {
     public static void main(String[] args) {
         SearchServiceRequest searchServiceRequest = new SearchServiceRequest();
         searchServiceRequest.setQ("roses");
-        SearchServiceResponse searchServiceResponse = new SearchServiceResponse();
-        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
+//        SearchServiceResponse searchServiceResponse = new SearchServiceResponse();
+//        SearchModelWrapper searchModelWrapper = new SearchModelWrapper(searchServiceRequest, searchServiceResponse);
 //        searchModelWrapper.setSearchServiceResponse(searchServiceResponse);
 //        searchModelWrapper.setSearchServiceRequest(searchServiceRequest);
         Test test = new Test();

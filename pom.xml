@@ -123,6 +123,12 @@
             <artifactId>generic-search</artifactId>
             <version>0.0.1</version>
             <classifier>client</classifier>
+            <exclusions>
+                <exclusion>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

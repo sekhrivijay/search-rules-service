@@ -1,4 +1,4 @@
-package com.services.micro.rules.search.hc;
+package com.services.micro.rules.search.healthcheck;
 
 import com.micro.services.search.api.SearchModelWrapper;
 import com.services.micro.rules.search.bl.RulesExecutionService;

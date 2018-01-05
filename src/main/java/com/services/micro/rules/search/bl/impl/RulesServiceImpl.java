@@ -114,11 +114,9 @@ public class RulesServiceImpl implements RulesService {
     @Timed
     @ExceptionMetered
     public List<RuleEntity> read(RuleEntity ruleEntityFromClient) throws Exception {
-        return ruleRepository.findByPackageNameLikeAndRuleNameLikeAndServiceNameLikeAndEnvironmentLike(
+        return ruleRepository.findByPackageNameLikeAndRuleNameLike(
                 StringUtils.defaultString(ruleEntityFromClient.getPackageName(), GlobalConstants.STAR),
-                StringUtils.defaultString(ruleEntityFromClient.getRuleName(), GlobalConstants.STAR),
-                StringUtils.defaultString(ruleEntityFromClient.getServiceName(), GlobalConstants.STAR),
-                StringUtils.defaultString(ruleEntityFromClient.getEnvironment(), GlobalConstants.STAR));
+                StringUtils.defaultString(ruleEntityFromClient.getRuleName(), GlobalConstants.STAR));
     }
 
     @Override
@@ -159,11 +157,9 @@ public class RulesServiceImpl implements RulesService {
     }
 
     private RuleEntity getRuleEntityFromDB(RuleEntity ruleEntity) {
-        return ruleRepository.findByPackageNameAndRuleNameAndServiceNameAndEnvironment(
+        return ruleRepository.findByPackageNameAndRuleName(
                 ruleEntity.getPackageName(),
-                ruleEntity.getRuleName(),
-                ruleEntity.getServiceName(),
-                ruleEntity.getEnvironment());
+                ruleEntity.getRuleName());
     }
 
 
@@ -187,12 +183,10 @@ public class RulesServiceImpl implements RulesService {
 
     private void validateServiceRequest(RuleEntity ruleServiceRequest) throws Exception {
         LOGGER.info(ruleServiceRequest.toString());
-        if (StringUtils.isEmpty(ruleServiceRequest.getServiceName())
-                || StringUtils.isEmpty(ruleServiceRequest.getEnvironment())
-                || StringUtils.isEmpty(ruleServiceRequest.getRuleName())
+        if (StringUtils.isEmpty(ruleServiceRequest.getRuleName())
                 || StringUtils.isEmpty(ruleServiceRequest.getPackageName())) {
             throw new Exception("Missing mandatory fields. " +
-                    "All 4 fields serviceName, environment, ruleName and packageName are required");
+                    "Both 2 fields ruleName and packageName are required");
         }
     }
 

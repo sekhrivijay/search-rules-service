@@ -6,8 +6,6 @@ import java.util.Map;
 
 public class RuleEntity implements Serializable {
     private String id;
-    private String environment;
-    private String serviceName;
     private String ruleName;
     private String packageName;
     private Status status = Status.INACTIVE;
@@ -20,22 +18,6 @@ public class RuleEntity implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getEnvironment() {
-        return environment;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
     }
 
     public String getRuleName() {
@@ -82,8 +64,6 @@ public class RuleEntity implements Serializable {
     public String toString() {
         return "RuleEntity{" +
                 "id='" + id + '\'' +
-                ", environment='" + environment + '\'' +
-                ", serviceName='" + serviceName + '\'' +
                 ", ruleName='" + ruleName + '\'' +
                 ", packageName='" + packageName + '\'' +
                 ", status=" + status +

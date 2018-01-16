@@ -1,7 +1,8 @@
 package com.ftd.services.rules.search.controller;
 
-import com.ftd.services.rules.search.api.RuleEntity;
-import com.ftd.services.rules.search.bl.RulesService;
+import java.util.Base64;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.ftd.services.rules.search.api.RuleEntity;
+import com.ftd.services.rules.search.bl.RulesService;
 
 @RestController
 @RefreshScope
@@ -28,25 +30,46 @@ public class RulesController {
         this.rulesService = rulesService;
     }
 
+    void decodeRuleFromTransport(RuleEntity ruleEntity) {
+        ruleEntity.setRule(new String(Base64.getDecoder().decode(ruleEntity.getRule())));
+    }
+
+    void encodeRuleForTransport(RuleEntity ruleEntity) {
+        ruleEntity.setRule(new String(Base64.getDecoder().decode(ruleEntity.getRule())));
+    }
+
     @PostMapping("/")
     public RuleEntity createRule(@RequestBody RuleEntity ruleEntity) throws Exception {
+        decodeRuleFromTransport(ruleEntity);
         return rulesService.create(ruleEntity);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RuleEntity> updateRule(@PathVariable String id,
-                                                 @RequestBody RuleEntity ruleEntity) throws Exception {
+    public ResponseEntity<RuleEntity> updateRule(
+            @PathVariable String id,
+            @RequestBody RuleEntity ruleEntity) throws Exception {
+        decodeRuleFromTransport(ruleEntity);
         return buildResponse(rulesService.update(id, ruleEntity));
+    }
+
+    @GetMapping("/reloadStaging")
+    public void reloadRuleKb() throws Exception {
+        rulesService.reloadRuleKb();
     }
 
     @GetMapping("/query")
     public List<RuleEntity> getRulesBy(RuleEntity ruleEntity) throws Exception {
-        return rulesService.read(ruleEntity);
+        decodeRuleFromTransport(ruleEntity);
+        List<RuleEntity> ruleList =  rulesService.read(ruleEntity);
+        ruleList.stream().forEach(this::encodeRuleForTransport);
+        return ruleList;
     }
 
     @GetMapping("/")
     public List<RuleEntity> getAllRules() throws Exception {
-        return rulesService.read();
+        List<RuleEntity> ruleList =   rulesService.read();
+        ruleList.stream().forEach(this::encodeRuleForTransport);
+        return ruleList;
     }
 
     @GetMapping("/{id}")
@@ -63,6 +86,7 @@ public class RulesController {
         if (ruleEntity == null) {
             return ResponseEntity.notFound().build();
         }
+        encodeRuleForTransport(ruleEntity);
         return ResponseEntity.ok().body(ruleEntity);
     }
 }

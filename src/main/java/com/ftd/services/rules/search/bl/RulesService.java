@@ -1,8 +1,8 @@
 package com.ftd.services.rules.search.bl;
 
-import com.ftd.services.rules.search.api.RuleEntity;
-
 import java.util.List;
+
+import com.ftd.services.rules.search.api.RuleEntity;
 
 public interface RulesService {
     RuleEntity create(RuleEntity ruleEntity) throws Exception;
@@ -16,4 +16,6 @@ public interface RulesService {
     RuleEntity update(String id, RuleEntity ruleEntity) throws Exception;
 
     RuleEntity delete(String id) throws Exception;
+
+    void reloadRuleKb() throws Exception;
 }

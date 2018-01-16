@@ -1,4 +1,4 @@
-package com.ftd.services.rules.search.resource;
+package com.ftd.services.rules.search.controller;
 
 import com.ftd.services.rules.search.bl.RulesService;
 import org.junit.Before;
@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @RunWith(SpringRunner.class)
-public class RulesExecutionResourceTest {
+public class RulesExecutionControllerTest {
     private MockMvc mockMvc;
 
 
@@ -19,12 +19,12 @@ public class RulesExecutionResourceTest {
     private RulesService rulesService;
 
     @InjectMocks
-    private RulesExecutionResource rulesExecutionResource;
+    private RulesExecutionController rulesExecutionController;
 
 
     @Before
     public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.standaloneSetup(rulesExecutionResource)
+        mockMvc = MockMvcBuilders.standaloneSetup(rulesExecutionController)
                 .build();
     }
 

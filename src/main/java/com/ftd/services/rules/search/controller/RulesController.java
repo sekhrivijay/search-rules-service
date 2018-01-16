@@ -1,4 +1,4 @@
-package com.ftd.services.rules.search.resource;
+package com.ftd.services.rules.search.controller;
 
 import com.ftd.services.rules.search.api.RuleEntity;
 import com.ftd.services.rules.search.bl.RulesService;
@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RefreshScope
 @RequestMapping("/api/rules")
-public class RulesResource {
+public class RulesController {
 
     private RulesService rulesService;
 

@@ -1,4 +1,4 @@
-package com.ftd.services.rules.search.resource;
+package com.ftd.services.rules.search.controller;
 
 import com.ftd.services.search.api.SearchModelWrapper;
 import com.services.micro.commons.logging.annotation.LogExecutionTime;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RefreshScope
 @RequestMapping("/api/rules")
-public class RulesExecutionResource {
+public class RulesExecutionController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RulesExecutionController.class);
 
     private RulesExecutionService rulesExecutionService;
 

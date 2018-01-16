@@ -1,15 +1,9 @@
 package com.ftd.services.rules.search.bl.impl;
 
+import java.util.List;
 
-import com.codahale.metrics.annotation.ExceptionMetered;
-import com.codahale.metrics.annotation.Timed;
-import com.ftd.services.rules.search.api.RuleEntity;
-import com.ftd.services.rules.search.api.Status;
-import com.ftd.services.rules.search.bl.repository.RuleRepository;
-import com.ftd.services.rules.search.config.AppConfig;
-import com.ftd.services.rules.search.config.RulesConfiguration;
-import com.ftd.services.search.config.GlobalConstants;
-import com.ftd.services.rules.search.bl.RulesService;
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.io.Resource;
@@ -23,8 +17,15 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
+import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Timed;
+import com.ftd.services.rules.search.api.RuleEntity;
+import com.ftd.services.rules.search.api.Status;
+import com.ftd.services.rules.search.bl.RulesService;
+import com.ftd.services.rules.search.bl.repository.RuleRepository;
+import com.ftd.services.rules.search.config.AppConfig;
+import com.ftd.services.rules.search.config.RulesConfiguration;
+import com.ftd.services.search.config.GlobalConstants;
 
 @Service(value = "RulesService")
 @EnableConfigurationProperties(AppConfig.class)
@@ -32,11 +33,11 @@ public class RulesServiceImpl implements RulesService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RulesServiceImpl.class);
 
-    private RulesConfiguration rulesConfiguration;
+    private RulesConfiguration  rulesConfiguration;
 
-    private RuleRepository ruleRepository;
+    private RuleRepository      ruleRepository;
 
-    private AppConfig appConfig;
+    private AppConfig           appConfig;
 
     @Autowired
     public void setAppConfig(AppConfig appConfig) {
@@ -51,32 +52,27 @@ public class RulesServiceImpl implements RulesService {
     @PostConstruct
     public void loadRules() {
         appConfig.getRuleStatusList()
-                .forEach(status ->
-                        ruleRepository
-                                .findByStatus(Status.getStatus(status))
-                                .forEach(this::createOrUpdateRuleInKBase));
+                .forEach(status -> ruleRepository
+                        .findByStatus(Status.getStatus(status))
+                        .forEach(this::createOrUpdateRuleInKBase));
     }
 
-
+    /*
+     * What is scheduled here will change to making it conditional on a "flag".
+     */
     @Scheduled(fixedRateString = "${service.ruleReloadRate}")
-    public void refreshRules() {
+    public void scheduledRefresh() {
         LOGGER.info("Reloading all rules ..");
-        InternalKnowledgeBase kbaseTmp = rulesConfiguration.createNewInternalKnowledgeBase();
-        KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.createNewKnowledgeBuilder();
-
-        appConfig.getRuleStatusList()
-                .forEach(status ->
-                        ruleRepository
-                                .findByStatus(Status.getStatus(status))
-                                .forEach(ruleEntity -> refresh(ruleEntity, knowledgeBuilderTmp, kbaseTmp)));
-        rulesConfiguration.setKbase(kbaseTmp);
-        rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
+        try {
+            reloadRules();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void refresh(RuleEntity ruleEntity, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
         createOrUpdateRuleInKBase(ruleEntity, kbuilder, kbase);
     }
-
 
     @Autowired
     public void setRuleRepository(RuleRepository ruleRepository) {
@@ -97,7 +93,6 @@ public class RulesServiceImpl implements RulesService {
         return ruleRepository.save(ruleEntityFromClient);
     }
 
-
     private Resource getResource(RuleEntity ruleEntity) {
         return ResourceFactory.newByteArrayResource(ruleEntity.getRule().getBytes());
     }
@@ -108,7 +103,6 @@ public class RulesServiceImpl implements RulesService {
     public List<RuleEntity> read() throws Exception {
         return ruleRepository.findAll();
     }
-
 
     @Override
     @Timed
@@ -161,24 +155,21 @@ public class RulesServiceImpl implements RulesService {
                 ruleEntity.getRuleName());
     }
 
-
     private void createOrUpdateRuleInKBase(RuleEntity ruleEntity) {
         createOrUpdateRuleInKBase(ruleEntity, rulesConfiguration.getKbuilder(), rulesConfiguration.getKbase());
     }
 
     private void createOrUpdateRuleInKBase(RuleEntity ruleEntity,
-                                           KnowledgeBuilder kbuilder,
-                                           InternalKnowledgeBase kbase) {
+            KnowledgeBuilder kbuilder,
+            InternalKnowledgeBase kbase) {
         LOGGER.info("Adding rule into knowledge base " + ruleEntity);
         createOrUpdateRuleInKBase(getResource(ruleEntity), kbuilder, kbase);
     }
-
 
     private void createOrUpdateRuleInKBase(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {
         kbuilder.add(resource, ResourceType.DRL);
         kbase.addPackages(kbuilder.getKnowledgePackages());
     }
-
 
     private void validateServiceRequest(RuleEntity ruleServiceRequest) throws Exception {
         LOGGER.info(ruleServiceRequest.toString());
@@ -189,8 +180,20 @@ public class RulesServiceImpl implements RulesService {
         }
     }
 
+    @Override
+    public void reloadRuleKb() throws Exception {
+        reloadRules();
+    }
 
+    void reloadRules() throws Exception {
+        InternalKnowledgeBase kbaseTmp = rulesConfiguration.createNewInternalKnowledgeBase();
+        KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.createNewKnowledgeBuilder();
+
+        appConfig.getRuleStatusList()
+                .forEach(status -> ruleRepository
+                        .findByStatus(Status.getStatus(status))
+                        .forEach(ruleEntity -> refresh(ruleEntity, knowledgeBuilderTmp, kbaseTmp)));
+        rulesConfiguration.setKbase(kbaseTmp);
+        rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
+    }
 }
-
-
-

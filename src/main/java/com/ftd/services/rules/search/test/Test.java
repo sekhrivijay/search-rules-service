@@ -1,8 +1,7 @@
 package com.ftd.services.rules.search.test;
 
-import com.ftd.services.search.api.SearchModelWrapper;
-import com.ftd.services.search.api.request.SearchServiceRequest;
-import com.ftd.services.search.api.response.SearchServiceResponse;
+import java.util.Collection;
+
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.drools.core.impl.KnowledgeBaseFactory;
 import org.kie.api.definition.KiePackage;
@@ -15,7 +14,9 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import com.ftd.services.search.api.SearchModelWrapper;
+import com.ftd.services.search.api.request.SearchServiceRequest;
+import com.ftd.services.search.api.response.SearchServiceResponse;
 
 public class Test {
 

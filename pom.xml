@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.services.micro</groupId>
-    <artifactId>rules-search</artifactId>
+    <groupId>com.ftd.services</groupId>
+    <artifactId>search-rules</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
 
@@ -119,8 +119,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.services.micro</groupId>
-            <artifactId>generic-search</artifactId>
+            <groupId>com.ftd.services</groupId>
+            <artifactId>search</artifactId>
             <version>0.0.1</version>
             <classifier>client</classifier>
             <exclusions>

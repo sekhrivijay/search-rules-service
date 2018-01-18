@@ -14,9 +14,9 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ftd.services.search.api.SearchModelWrapper;
 import com.ftd.services.search.api.request.SearchServiceRequest;
 import com.ftd.services.search.api.response.SearchServiceResponse;
+import com.ftd.services.search.bl.clients.rules.RuleServiceResponse;
 
 public class Test {
 
@@ -120,7 +120,7 @@ public class Test {
     }
 
 
-    public SearchModelWrapper fireRules(SearchModelWrapper searchModelWrapper) {
+    public RuleServiceResponse fireRules(RuleServiceResponse searchModelWrapper) {
         KieSession knowledgeSession = null;
         InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();

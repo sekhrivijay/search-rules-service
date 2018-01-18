@@ -71,5 +71,4 @@ public class RuleEntity implements Serializable {
                 ", metaData=" + metaData +
                 '}';
     }
-
 }

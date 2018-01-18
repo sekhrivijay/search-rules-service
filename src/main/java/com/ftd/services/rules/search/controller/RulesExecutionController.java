@@ -1,8 +1,5 @@
 package com.ftd.services.rules.search.controller;
 
-import com.ftd.services.search.api.SearchModelWrapper;
-import com.services.micro.commons.logging.annotation.LogExecutionTime;
-import com.ftd.services.rules.search.bl.RulesExecutionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.ftd.services.rules.search.bl.RulesExecutionService;
+import com.ftd.services.search.bl.clients.rules.RuleServiceResponse;
+import com.services.micro.commons.logging.annotation.LogExecutionTime;
 
 @RestController
 @RefreshScope
@@ -28,14 +29,14 @@ public class RulesExecutionController {
 
     @PostMapping("/executePre")
     @LogExecutionTime
-    public SearchModelWrapper executePre(@RequestBody SearchModelWrapper searchModelWrapper) throws Exception {
+    public RuleServiceResponse executePre(@RequestBody RuleServiceResponse searchModelWrapper) throws Exception {
         LOGGER.info(searchModelWrapper.toString());
         return rulesExecutionService.executePre(searchModelWrapper);
     }
 
     @PostMapping("/executePost")
     @LogExecutionTime
-    public SearchModelWrapper executePost(@RequestBody SearchModelWrapper searchModelWrapper) throws Exception {
+    public RuleServiceResponse executePost(@RequestBody RuleServiceResponse searchModelWrapper) throws Exception {
         LOGGER.info(searchModelWrapper.toString());
         return rulesExecutionService.executePost(searchModelWrapper);
     }

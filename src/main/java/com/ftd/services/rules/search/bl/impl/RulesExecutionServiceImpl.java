@@ -1,17 +1,18 @@
 package com.ftd.services.rules.search.bl.impl;
 
-import com.codahale.metrics.annotation.ExceptionMetered;
-import com.codahale.metrics.annotation.Timed;
-import com.ftd.services.rules.search.config.AppConfig;
-import com.ftd.services.rules.search.config.RulesConfiguration;
-import com.ftd.services.search.api.SearchModelWrapper;
-import com.ftd.services.rules.search.bl.RulesExecutionService;
 import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
+
+import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Timed;
+import com.ftd.services.rules.search.bl.RulesExecutionService;
+import com.ftd.services.rules.search.config.AppConfig;
+import com.ftd.services.rules.search.config.RulesConfiguration;
+import com.ftd.services.search.bl.clients.rules.RuleServiceResponse;
 
 @Service(value = "RulesExecutionService")
 @EnableConfigurationProperties(AppConfig.class)
@@ -30,20 +31,20 @@ public class RulesExecutionServiceImpl implements RulesExecutionService {
     @Override
     @Timed
     @ExceptionMetered
-    public SearchModelWrapper executePre(SearchModelWrapper searchModelWrapper) throws Exception {
-        return fireRules(searchModelWrapper);
+    public RuleServiceResponse executePre(RuleServiceResponse response) throws Exception {
+        return fireRules(response);
     }
 
 
     @Override
     @Timed
     @ExceptionMetered
-    public SearchModelWrapper executePost(SearchModelWrapper searchModelWrapper) throws Exception {
+    public RuleServiceResponse executePost(RuleServiceResponse searchModelWrapper) throws Exception {
         return fireRules(searchModelWrapper);
     }
 
 
-    private SearchModelWrapper fireRules(SearchModelWrapper searchModelWrapper) {
+    private RuleServiceResponse fireRules(RuleServiceResponse searchModelWrapper) {
         KieSession knowledgeSession = null;
         try {
             knowledgeSession = rulesConfiguration.getKbase().newKieSession();

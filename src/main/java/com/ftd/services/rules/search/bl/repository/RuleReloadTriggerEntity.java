@@ -2,12 +2,12 @@ package com.ftd.services.rules.search.bl.repository;
 
 import java.io.Serializable;
 
-public class RuleSequenceEntity implements Serializable {
+public class RuleReloadTriggerEntity implements Serializable {
     private static final long serialVersionUID = -3462427577309415456L;
 
     private String            id;
 
-    private int               seq;
+    private Long              lastUpdatedMS;
 
     public String getId() {
         return id;
@@ -17,20 +17,20 @@ public class RuleSequenceEntity implements Serializable {
         this.id = id;
     }
 
-    public int getUpdateSequence() {
-        return seq;
-    }
-
-    public void setUpdateSequence(int seq) {
-        this.seq = seq;
-    }
-
     @Override
     public String toString() {
-        return "RuleSequenceEntity{" +
+        return "RuleReloadTriggerEntity{" +
                 "id='" + id + '\'' +
-                ", seq='" + seq +
+                ", lastUpdateMS='" + lastUpdatedMS.longValue() +
                 '}';
+    }
+
+    public Long getLastUpdatedMS() {
+        return lastUpdatedMS;
+    }
+
+    public void setLastUpdatedMS(Long lastUpdatedMS) {
+        this.lastUpdatedMS = lastUpdatedMS;
     }
 
 }

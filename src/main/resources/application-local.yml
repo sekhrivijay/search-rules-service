@@ -2,3 +2,22 @@ service:
   metrics:
     prometheus:
       enabled: true
+  ruleReloadRate: 1000      
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: INFO
+      apache:
+        catalina:
+          authenticator: DEBUG
+
+spring:
+   data:
+    mongodb:
+      uri: mongodb://localhost:27017/searchrules
+ 

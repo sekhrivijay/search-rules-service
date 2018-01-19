@@ -106,8 +106,7 @@ public class RulesServiceImpl implements RulesService {
         validateServiceRequest(ruleEntityFromClient);
         RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
         if (ruleEntityFromDB != null) {
-            throw new Exception(
-                    "A rule with same ruleName, packageName, serviceName, and environment already exist");
+            throw new Exception("A rule with same ruleName, packageName, serviceName, and environment already exist");
         }
         RuleEntity savedRule = ruleRepository.save(ruleEntityFromClient);
         updateTimestampOnTrigger();
@@ -234,7 +233,7 @@ public class RulesServiceImpl implements RulesService {
     }
 
     @Override
-    public void reloadRuleKb() throws Exception {
+    public void reloadKb() throws Exception {
         reloadRules();
     }
 

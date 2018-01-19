@@ -78,9 +78,9 @@ public class RulesController {
         return buildResponse(rulesService.update(id, ruleEntity));
     }
 
-    @GetMapping("/reloadStaging")
+    @GetMapping("/reloadKb")
     public void reloadRuleKb() throws Exception {
-        rulesService.reloadRuleKb();
+        rulesService.reloadKb();
     }
 
     @GetMapping("/query")

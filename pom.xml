@@ -27,6 +27,10 @@
             <id>dintuMavenRepo</id>
             <url>https://rkande.jfrog.io/rkande/libs-snapshot-local/</url>
         </repository> 
+        <repository>
+            <id>dintuMavenRepo2</id>
+            <url>https://rkande.jfrog.io/rkande/libs-release-local/</url>
+        </repository> 
     </repositories>
 
     <properties>
@@ -102,7 +106,7 @@
             <artifactId>commons-misc</artifactId>
             <version>0.0.2-SNAPSHOT</version>
         </dependency>
-        -->
+         -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

@@ -17,5 +17,5 @@ public interface RulesService {
 
     RuleEntity delete(String id) throws Exception;
 
-    void reloadRuleKb() throws Exception;
+    void reloadKb() throws Exception;
 }

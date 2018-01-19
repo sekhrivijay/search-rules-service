@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,7 @@ import com.ftd.services.rules.search.bl.repository.RuleReloadTriggerRepository;
 import com.ftd.services.rules.search.bl.repository.RuleRepository;
 import com.ftd.services.rules.search.config.AppConfig;
 import com.ftd.services.rules.search.config.RulesConfiguration;
+import com.ftd.services.rules.search.exception.RequestException;
 import com.ftd.services.search.config.GlobalConstants;
 
 /**
@@ -102,11 +104,12 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public RuleEntity create(RuleEntity ruleEntityFromClient) throws Exception {
+    public RuleEntity create(RuleEntity ruleEntityFromClient) {
         validateServiceRequest(ruleEntityFromClient);
         RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
         if (ruleEntityFromDB != null) {
-            throw new Exception("A rule with same ruleName, packageName, serviceName, and environment already exist");
+            throw new RequestException(HttpStatus.BAD_REQUEST,
+                    "A rule with same ruleName, packageName, serviceName, and environment already exist");
         }
         RuleEntity savedRule = ruleRepository.save(ruleEntityFromClient);
         updateTimestampOnTrigger();
@@ -120,14 +123,14 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public List<RuleEntity> read() throws Exception {
+    public List<RuleEntity> read() {
         return ruleRepository.findAll();
     }
 
     @Override
     @Timed
     @ExceptionMetered
-    public List<RuleEntity> read(RuleEntity ruleEntityFromClient) throws Exception {
+    public List<RuleEntity> read(RuleEntity ruleEntityFromClient) {
         return ruleRepository.findByPackageNameLikeAndRuleNameLike(
                 StringUtils.defaultString(ruleEntityFromClient.getPackageName(), GlobalConstants.STAR),
                 StringUtils.defaultString(ruleEntityFromClient.getRuleName(), GlobalConstants.STAR));
@@ -136,7 +139,7 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public RuleEntity readById(String id) throws Exception {
+    public RuleEntity readById(String id) {
         RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
         if (ruleEntityFromDB == null) {
             return null;
@@ -147,10 +150,10 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public RuleEntity update(String id, RuleEntity ruleEntityFromClient) throws Exception {
+    public RuleEntity update(String id, RuleEntity ruleEntityFromClient) {
         RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
         if (ruleEntityFromDB == null) {
-            throw new Exception("rule id not found in database on update: " + id);
+            throw new RequestException(HttpStatus.BAD_REQUEST, "rule {} not found in database on update: ", id);
         }
         ruleEntityFromClient.setId(ruleEntityFromDB.getId());
         RuleEntity savedRule = ruleRepository.save(ruleEntityFromClient);
@@ -161,10 +164,10 @@ public class RulesServiceImpl implements RulesService {
     @Override
     @Timed
     @ExceptionMetered
-    public RuleEntity delete(String id) throws Exception {
+    public RuleEntity delete(String id) {
         RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
         if (ruleEntityFromDB == null) {
-            throw new Exception("id not found for delete: " + id);
+            throw new RequestException(HttpStatus.BAD_REQUEST, "rule {} not found in database on delete: ", id);
         }
         ruleRepository.delete(id);
         updateTimestampOnTrigger();
@@ -222,22 +225,22 @@ public class RulesServiceImpl implements RulesService {
                 ruleEntity.getRuleName());
     }
 
-    private void validateServiceRequest(RuleEntity ruleServiceRequest) throws Exception {
+    private void validateServiceRequest(RuleEntity ruleServiceRequest) {
         LOGGER.info(ruleServiceRequest.toString());
         if (StringUtils.isEmpty(ruleServiceRequest.getRuleName())
                 || StringUtils.isEmpty(ruleServiceRequest.getPackageName())) {
-            throw new Exception(
+            throw new RequestException(HttpStatus.BAD_REQUEST,
                     "Missing mandatory fields. " +
                             "Both fields ruleName and packageName are required");
         }
     }
 
     @Override
-    public void reloadKb() throws Exception {
+    public void reloadKb() {
         reloadRules();
     }
 
-    void reloadRules() throws Exception {
+    void reloadRules() {
         InternalKnowledgeBase kbaseTmp = rulesConfiguration.createNewInternalKnowledgeBase();
         KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.createNewKnowledgeBuilder();
 

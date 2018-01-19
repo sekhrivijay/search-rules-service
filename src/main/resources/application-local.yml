@@ -2,7 +2,10 @@ service:
   metrics:
     prometheus:
       enabled: true
-  ruleReloadRate: 1000      
+  ruleReloadRate: 99999999      
+
+exceptionHandler:
+  logForHttpStatusAndAbove: 400
 
 logging:
   level:

@@ -22,7 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.ftd.services.rules.search.api.RuleEntity;
 import com.ftd.services.rules.search.api.Status;
-import com.ftd.services.rules.search.controller.RestfulExceptionHandler.RestfulBaseException;
+import com.ftd.services.rules.search.exception.SearchExceptionHandler.TranslatedExceptionMessage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -50,7 +50,6 @@ public class SearchRuleServiceApplicationTests {
         ResponseEntity<RuleEntity[]> response = template.getForEntity(
                 base.toString() + "/",
                 RuleEntity[].class);
-        // System.out.println("remove junit rows from database: " + response.getBody().length);
         Arrays.stream(response.getBody())
                 .filter(each -> each.getPackageName().startsWith("junit"))
                 .forEach(rule -> {
@@ -98,14 +97,14 @@ public class SearchRuleServiceApplicationTests {
         rule.setRuleName("junitRuleName");
         rule.setRule(Base64.getEncoder().encodeToString("jUnit Rule Contents".getBytes()));
 
-        ResponseEntity<RestfulBaseException> badDataResponse = template.postForEntity(
+        ResponseEntity<TranslatedExceptionMessage> badDataResponse = template.postForEntity(
                 base.toString() + "/",
                 rule,
-                RestfulBaseException.class);
+                TranslatedExceptionMessage.class);
         Assert.assertEquals("checking for bad data", BAD_REQUEST, badDataResponse.getStatusCode());
         Assert.assertEquals("checking for bad data message",
                 "Missing mandatory fields. Both fields ruleName and packageName are required",
-                badDataResponse.getBody().getMsg());
+                badDataResponse.getBody().getMessage());
     }
 
     @Test
@@ -117,14 +116,14 @@ public class SearchRuleServiceApplicationTests {
         rule.setRuleName(null);
         rule.setRule(Base64.getEncoder().encodeToString("jUnit Rule Contents".getBytes()));
 
-        ResponseEntity<RestfulBaseException> badDataResponse = template.postForEntity(
+        ResponseEntity<TranslatedExceptionMessage> badDataResponse = template.postForEntity(
                 base.toString() + "/",
                 rule,
-                RestfulBaseException.class);
+                TranslatedExceptionMessage.class);
         Assert.assertEquals("checking for bad data", BAD_REQUEST, badDataResponse.getStatusCode());
         Assert.assertEquals("checking for bad data message",
                 "Missing mandatory fields. Both fields ruleName and packageName are required",
-                badDataResponse.getBody().getMsg());
+                badDataResponse.getBody().getMessage());
     }
 
     @Test
@@ -140,14 +139,14 @@ public class SearchRuleServiceApplicationTests {
                 base.toString() + "/",
                 rule,
                 RuleEntity.class);
-        ResponseEntity<RestfulBaseException> duplicateResponse = template.postForEntity(
+        ResponseEntity<TranslatedExceptionMessage> duplicateResponse = template.postForEntity(
                 base.toString() + "/",
                 rule,
-                RestfulBaseException.class);
+                TranslatedExceptionMessage.class);
         Assert.assertEquals("checking for duplicate", BAD_REQUEST, duplicateResponse.getStatusCode());
         Assert.assertEquals("checking for duplicate message",
                 "A rule with same ruleName, packageName, serviceName, and environment already exist",
-                duplicateResponse.getBody().getMsg());
+                duplicateResponse.getBody().getMessage());
     }
 
     @Test
@@ -195,34 +194,19 @@ public class SearchRuleServiceApplicationTests {
     }
 
     @Test
-    public void updateRule() throws Exception {
+    public void updateUnknownRule() throws Exception {
         /*
-         * first create it
+         * first create it but don't store it
          */
         RuleEntity rule = new RuleEntity();
         rule.setPackageName("junitPackage");
         rule.setStatus(Status.INACTIVE);
         rule.setRuleName("junitRuleName");
         rule.setRule(Base64.getEncoder().encodeToString("jUnit Rule Contents".getBytes()));
-
-        ResponseEntity<RuleEntity> createResponse = template.postForEntity(
-                base.toString() + "/",
-                rule,
-                RuleEntity.class);
-        RuleEntity createdRule = createResponse.getBody();
         /*
          * update it
          */
-        createdRule.setRule(Base64.getEncoder().encodeToString("jUnit UPDATED Rule Contents".getBytes()));
-        template.put(base.toString() + "/{1}", createdRule, createdRule.getId());
-        /*
-         * find it
-         */
-        ResponseEntity<RuleEntity> queryresponse = template.getForEntity(
-                base.toString() + "/{1}",
-                RuleEntity.class,
-                createdRule.getId());
-
-        Assert.assertEquals("base64Check", createdRule.getRule(), queryresponse.getBody().getRule());
+        rule.setRule(Base64.getEncoder().encodeToString("jUnit UPDATED Rule Contents".getBytes()));
+        template.put(base.toString() + "/{1}", rule, rule.getId());
     }
 }

@@ -5,17 +5,17 @@ import java.util.List;
 import com.ftd.services.rules.search.api.RuleEntity;
 
 public interface RulesService {
-    RuleEntity create(RuleEntity ruleEntity) throws Exception;
+    RuleEntity create(RuleEntity ruleEntity);
 
-    List<RuleEntity> read(RuleEntity ruleEntity) throws Exception;
+    List<RuleEntity> read(RuleEntity ruleEntity);
 
-    List<RuleEntity> read() throws Exception;
+    List<RuleEntity> read();
 
-    RuleEntity readById(String id) throws Exception;
+    RuleEntity readById(String id);
 
-    RuleEntity update(String id, RuleEntity ruleEntity) throws Exception;
+    RuleEntity update(String id, RuleEntity ruleEntity);
 
-    RuleEntity delete(String id) throws Exception;
+    RuleEntity delete(String id);
 
-    void reloadKb() throws Exception;
+    void reloadKb();
 }

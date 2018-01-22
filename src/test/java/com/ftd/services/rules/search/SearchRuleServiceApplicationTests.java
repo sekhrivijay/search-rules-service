@@ -17,6 +17,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -182,10 +184,21 @@ public class SearchRuleServiceApplicationTests {
 
     @Test
     public void deleteRuleThatDoesntExist() throws Exception {
+        RuleEntity rule = new RuleEntity();
         /*
          * delete it
          */
-        template.delete(base.toString() + "/99999");
+        HttpEntity<RuleEntity> entity = new HttpEntity<RuleEntity>(rule);
+        ResponseEntity<TranslatedExceptionMessage> updateResponse = template.exchange(
+                base.toString() + "/1234",
+                HttpMethod.DELETE,
+                entity,
+                TranslatedExceptionMessage.class, rule);
+
+        Assert.assertEquals("checking for 404", NOT_FOUND, updateResponse.getStatusCode());
+        Assert.assertEquals("checking for not found message",
+                "rule 1234 not found in database on delete",
+                updateResponse.getBody().getMessage());
     }
 
     @Test
@@ -207,6 +220,16 @@ public class SearchRuleServiceApplicationTests {
          * update it
          */
         rule.setRule(Base64.getEncoder().encodeToString("jUnit UPDATED Rule Contents".getBytes()));
-        template.put(base.toString() + "/{1}", rule, rule.getId());
+        HttpEntity<RuleEntity> entity = new HttpEntity<RuleEntity>(rule);
+        ResponseEntity<TranslatedExceptionMessage> updateResponse = template.exchange(
+                base.toString() + "/1234",
+                HttpMethod.PUT,
+                entity,
+                TranslatedExceptionMessage.class, rule);
+
+        Assert.assertEquals("checking for 404", NOT_FOUND, updateResponse.getStatusCode());
+        Assert.assertEquals("checking for not found message",
+                "rule 1234 not found in database on update",
+                updateResponse.getBody().getMessage());
     }
 }

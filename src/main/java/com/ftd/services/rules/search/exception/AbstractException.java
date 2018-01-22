@@ -1,7 +1,5 @@
 package com.ftd.services.rules.search.exception;
 
-import java.text.MessageFormat;
-
 import org.springframework.http.HttpStatus;
 
 public abstract class AbstractException extends RuntimeException {
@@ -16,7 +14,7 @@ public abstract class AbstractException extends RuntimeException {
     public AbstractException(HttpStatus statusCode, String message, Object... substitutionValues) {
         super(message);
 
-        this.message = new MessageFormat(message).format(substitutionValues);
+        this.message = String.format(message, substitutionValues);
         this.statusCode = statusCode;
 
         this.stackTraceElement = Thread.currentThread().getStackTrace()[STACK_LOCATION_FOR_THROWER];

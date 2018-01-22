@@ -153,7 +153,7 @@ public class RulesServiceImpl implements RulesService {
     public RuleEntity update(String id, RuleEntity ruleEntityFromClient) {
         RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
         if (ruleEntityFromDB == null) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "rule {} not found in database on update: ", id);
+            throw new RequestException(HttpStatus.NOT_FOUND, "rule %s not found in database on update", id);
         }
         ruleEntityFromClient.setId(ruleEntityFromDB.getId());
         RuleEntity savedRule = ruleRepository.save(ruleEntityFromClient);
@@ -167,7 +167,7 @@ public class RulesServiceImpl implements RulesService {
     public RuleEntity delete(String id) {
         RuleEntity ruleEntityFromDB = ruleRepository.findOne(id);
         if (ruleEntityFromDB == null) {
-            throw new RequestException(HttpStatus.BAD_REQUEST, "rule {} not found in database on delete: ", id);
+            throw new RequestException(HttpStatus.NOT_FOUND, "rule %s not found in database on delete", id);
         }
         ruleRepository.delete(id);
         updateTimestampOnTrigger();

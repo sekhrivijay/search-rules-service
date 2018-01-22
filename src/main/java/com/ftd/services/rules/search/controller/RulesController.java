@@ -65,7 +65,7 @@ public class RulesController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<RuleEntity> createRule(@RequestBody RuleEntity ruleEntity) throws Exception {
+    public ResponseEntity<RuleEntity> createRule(@RequestBody RuleEntity ruleEntity) {
         decodeRuleFromTransport(ruleEntity);
         return buildResponse(rulesService.create(ruleEntity));
     }
@@ -73,7 +73,7 @@ public class RulesController {
     @PutMapping("/{id}")
     public ResponseEntity<RuleEntity> updateRule(
             @PathVariable String id,
-            @RequestBody RuleEntity ruleEntity) throws Exception {
+            @RequestBody RuleEntity ruleEntity) {
         decodeRuleFromTransport(ruleEntity);
         return buildResponse(rulesService.update(id, ruleEntity));
     }
@@ -99,12 +99,12 @@ public class RulesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RuleEntity> getRuleById(@PathVariable String id) throws Exception {
+    public ResponseEntity<RuleEntity> getRuleById(@PathVariable String id) {
         return buildResponse(rulesService.readById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RuleEntity> deleteRule(@PathVariable String id) throws Exception {
+    public ResponseEntity<RuleEntity> deleteRule(@PathVariable String id) {
         return buildResponse(rulesService.delete(id));
     }
 

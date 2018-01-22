@@ -1,5 +1,6 @@
 package com.ftd.services.rules.search.controller;
 
+import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ftd.services.rules.search.api.RuleEntity;
 import com.ftd.services.rules.search.bl.RulesService;
+import com.ftd.services.rules.search.exception.RequestException;
+import com.google.gson.Gson;
 
 /**
  * This class provides a restful API to maintain the drools rules. The most
@@ -89,6 +95,18 @@ public class RulesController {
         List<RuleEntity> ruleList = rulesService.read(ruleEntity);
         ruleList.stream().forEach(this::encodeRuleForTransport);
         return ruleList;
+    }
+
+    @PostMapping("/importRules")
+    public void importRuleFile(@RequestParam("file") MultipartFile multipartFile) {
+        try {
+            byte[] bytes = multipartFile.getBytes();
+            Gson gson = new Gson();
+            RuleEntity[] rules = gson.fromJson(new String(bytes), RuleEntity[].class);
+            rulesService.importRules(rules);
+        } catch (IOException e) {
+            throw new RequestException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @GetMapping("/")

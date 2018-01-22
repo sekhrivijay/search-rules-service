@@ -1,0 +1,22 @@
+[
+    {
+        "id": "5a6210eaa1b378953864eea2",
+        "ruleName": "redirectg6ftd",
+        "packageName": "redirect",
+        "status": "INACTIVE",
+        "rule": "cGFja2FnZSByZWRpcmVjdCBpbXBvcnQgY29tLmZ0ZC5zZXJ2aWNlcy5zZWFyY2guYXBpLnJlcXVlc3QuU2VhcmNoU2VydmljZVJlcXVlc3Q7IGltcG9ydCBjb20uZnRkLnNlcnZpY2VzLnNlYXJjaC5hcGkucmVzcG9uc2UuU2VhcmNoU2VydmljZVJlc3BvbnNlOyBpbXBvcnQgY29tLm1pY3JvLnNlcnZpY2VzLnNlYXJjaC5hcGkucmVzcG9uc2UuUmVkaXJlY3Q7IHJ1bGUgInJlZGlyZWN0ZzZmdGQiIGRpYWxlY3QgImphdmEiIHdoZW4gcmVxIDogU2VhcmNoU2VydmljZVJlcXVlc3QocSA9PSAnZzYnKSByZXMgOiBTZWFyY2hTZXJ2aWNlUmVzcG9uc2UoKSB0aGVuIFN5c3RlbS5vdXQucHJpbnRsbiggcmVxICk7IFJlZGlyZWN0IHJlZGlyZWN0ID0gbmV3IFJlZGlyZWN0KCk7IHJlZGlyZWN0LnNldFJlZGlyZWN0VXJsKCJodHRwczovL3d3dy5mdGQuY29tL2c2Iik7IHJlcy5zZXRSZWRpcmVjdChyZWRpcmVjdCk7IGVuZA==",
+        "metaData": {
+            "keyword": "g6",
+            "url": "https://www.ftd.com/g6",
+            "siteId": "ftd"
+        }
+    },
+    {
+        "id": "5a66101b10b6f600842ea3fc",
+        "ruleName": "junitRuleName",
+        "packageName": "junitPackage",
+        "status": "INACTIVE",
+        "rule": "alVuaXQgUnVsZSBDb250ZW50cw==",
+        "metaData": {}
+    }
+]

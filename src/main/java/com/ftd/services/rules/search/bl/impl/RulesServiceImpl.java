@@ -1,5 +1,7 @@
 package com.ftd.services.rules.search.bl.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -106,13 +108,7 @@ public class RulesServiceImpl implements RulesService {
     @Timed
     @ExceptionMetered
     public RuleEntity create(RuleEntity ruleEntityFromClient) {
-        validateServiceRequest(ruleEntityFromClient);
-        RuleEntity ruleEntityFromDB = getRuleEntityFromDB(ruleEntityFromClient);
-        if (ruleEntityFromDB != null) {
-            throw new RequestException(HttpStatus.BAD_REQUEST,
-                    "A rule with same ruleName, packageName, serviceName, and environment already exist");
-        }
-        RuleEntity savedRule = ruleRepository.save(ruleEntityFromClient);
+        RuleEntity savedRule = internalCreate(ruleEntityFromClient);
         updateTimestampOnTrigger();
         return savedRule;
     }
@@ -237,8 +233,46 @@ public class RulesServiceImpl implements RulesService {
     }
 
     @Override
+    @Timed
+    @ExceptionMetered
     public void reloadKb() {
         reloadRules();
+    }
+
+    @Override
+    @Timed
+    @ExceptionMetered
+    public void importRules(RuleEntity[] rules) {
+
+        List<String> errorMsgs = new ArrayList<>();
+        LongAdder lineNumber = new LongAdder();
+
+        ruleRepository.deleteAll();
+        Arrays.stream(rules).forEach(rule -> {
+            try {
+                lineNumber.increment();
+                internalCreate(rule);
+            } catch (Exception e) {
+                errorMsgs.add("import line " + lineNumber + ": " + e.getMessage());
+            }
+        });
+
+        if (!errorMsgs.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            errorMsgs.stream().forEach(error -> sb.append(error).append("\n"));
+            throw new RequestException(HttpStatus.BAD_REQUEST, sb.toString());
+        }
+
+    }
+
+    RuleEntity internalCreate(RuleEntity newRuleWithoutID) {
+        validateServiceRequest(newRuleWithoutID);
+        RuleEntity ruleEntityFromDB = getRuleEntityFromDB(newRuleWithoutID);
+        if (ruleEntityFromDB != null) {
+            throw new RequestException(HttpStatus.BAD_REQUEST,
+                    "A rule with same ruleName, packageName, serviceName, and environment already exists");
+        }
+        return ruleRepository.insert(newRuleWithoutID);
     }
 
     void reloadRules() {
@@ -265,8 +299,8 @@ public class RulesServiceImpl implements RulesService {
         rulesConfiguration.setKbase(kbaseTmp);
         rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
 
-//        KieSession knowledgeSession = kbaseTmp.newKieSession();
-//        knowledgeSession.fireAllRules();
+        // KieSession knowledgeSession = kbaseTmp.newKieSession();
+        // knowledgeSession.fireAllRules();
     }
 
     private void createOrUpdateRuleInKBase(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {

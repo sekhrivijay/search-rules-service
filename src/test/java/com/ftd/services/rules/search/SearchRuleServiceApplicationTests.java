@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
+import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Base64;
@@ -17,10 +18,15 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.ftd.services.rules.search.api.RuleEntity;
 import com.ftd.services.rules.search.api.Status;
@@ -133,6 +139,56 @@ public class SearchRuleServiceApplicationTests {
     }
 
     @Test
+    public void importRulesJson() throws Exception {
+        MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+
+        File file = new File(getClass().getClassLoader().getResource("rules.json").getFile());
+
+        bodyMap.add("file", new FileSystemResource(file));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+
+        ResponseEntity<TranslatedExceptionMessage> importResponse = template.exchange(
+                base.toString() + "/importRules",
+                HttpMethod.POST,
+                requestEntity,
+                TranslatedExceptionMessage.class);
+
+        Assert.assertEquals("checking for valid import", OK, importResponse.getStatusCode());
+//        Assert.assertEquals("checking for valid import",
+//                "",
+//                importResponse.getBody().getMessage());
+    }
+
+    @Test
+    public void importDuplicates() throws Exception {
+        MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+
+        File file = new File(getClass().getClassLoader().getResource("rules.withDuplicates.json").getFile());
+
+        bodyMap.add("file", new FileSystemResource(file));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+
+        ResponseEntity<TranslatedExceptionMessage> importResponse = template.exchange(
+                base.toString() + "/importRules",
+                HttpMethod.POST,
+                requestEntity,
+                TranslatedExceptionMessage.class);
+
+        Assert.assertEquals("checking for valid import", BAD_REQUEST, importResponse.getStatusCode());
+        Assert.assertEquals("checking for valid import",
+                "import line 2: A rule with same ruleName, packageName, serviceName, and environment already exists\n",
+                importResponse.getBody().getMessage());
+    }
+
+    @Test
     public void createRuleWithNoRuleName() throws Exception {
 
         RuleEntity rule = new RuleEntity();
@@ -170,7 +226,7 @@ public class SearchRuleServiceApplicationTests {
                 TranslatedExceptionMessage.class);
         Assert.assertEquals("checking for duplicate", BAD_REQUEST, duplicateResponse.getStatusCode());
         Assert.assertEquals("checking for duplicate message",
-                "A rule with same ruleName, packageName, serviceName, and environment already exist",
+                "A rule with same ruleName, packageName, serviceName, and environment already exists",
                 duplicateResponse.getBody().getMessage());
     }
 

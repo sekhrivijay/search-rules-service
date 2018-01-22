@@ -15,9 +15,7 @@ logging:
           mongodb:
             core:
               MongoTemplate: INFO
-      apache:
-        catalina:
-          authenticator: DEBUG
+      apache: DEBUG
 
 spring:
    data:

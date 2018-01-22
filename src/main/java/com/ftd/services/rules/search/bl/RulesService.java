@@ -18,4 +18,6 @@ public interface RulesService {
     RuleEntity delete(String id);
 
     void reloadKb();
+
+    void importRules(RuleEntity[] rules);
 }

@@ -91,6 +91,29 @@ public class SearchRuleServiceApplicationTests {
     }
 
     @Test
+    public void createRulesWithReload() throws Exception {
+
+        RuleEntity rule = new RuleEntity();
+        rule.setPackageName("junitPackage");
+        rule.setStatus(Status.INACTIVE);
+        rule.setRuleName("junitRuleName");
+        rule.setRule(Base64.getEncoder().encodeToString("jUnit Rule Contents".getBytes()));
+
+        ResponseEntity<RuleEntity> createResponse = template.postForEntity(
+                base.toString() + "/",
+                rule,
+                RuleEntity.class);
+        Assert.assertEquals("checking for 200 OK", OK, createResponse.getStatusCode());
+        /*
+         * reload the knowledgebase from the databases
+         */
+        ResponseEntity<RuleEntity[]> findAllResponse = template.getForEntity(
+                base.toString() + "/reloadKb",
+                RuleEntity[].class);
+        Assert.assertEquals("checking for 200 OK", OK, findAllResponse.getStatusCode());
+    }
+
+    @Test
     public void createRuleWithNoPackage() throws Exception {
 
         RuleEntity rule = new RuleEntity();

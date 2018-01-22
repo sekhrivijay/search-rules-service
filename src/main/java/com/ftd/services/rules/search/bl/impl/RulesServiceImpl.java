@@ -1,6 +1,7 @@
 package com.ftd.services.rules.search.bl.impl;
 
 import java.util.List;
+import java.util.concurrent.atomic.LongAdder;
 
 import javax.annotation.PostConstruct;
 
@@ -244,15 +245,28 @@ public class RulesServiceImpl implements RulesService {
         InternalKnowledgeBase kbaseTmp = rulesConfiguration.createNewInternalKnowledgeBase();
         KnowledgeBuilder knowledgeBuilderTmp = rulesConfiguration.createNewKnowledgeBuilder();
 
+        LongAdder rulesCount = new LongAdder();
+
         appConfig.getRuleStatusList()
                 .forEach(status -> ruleRepository.findByStatus(Status.getStatus(status))
-                        .forEach(ruleEntity -> createOrUpdateRuleInKBase(
-                                getResource(ruleEntity),
-                                knowledgeBuilderTmp,
-                                kbaseTmp)));
-        LOGGER.info("knowledgebase loaded");
+                        .forEach(ruleEntity -> {
+                            rulesCount.increment();
+                            LOGGER.debug("{} {} {} {}",
+                                    ruleEntity.getPackageName(),
+                                    ruleEntity.getRuleName(),
+                                    ruleEntity.getStatus(),
+                                    ruleEntity.getRule());
+                            createOrUpdateRuleInKBase(
+                                    getResource(ruleEntity),
+                                    knowledgeBuilderTmp,
+                                    kbaseTmp);
+                        }));
+        LOGGER.info("knowledgebase loaded with {} rules", rulesCount.intValue());
         rulesConfiguration.setKbase(kbaseTmp);
         rulesConfiguration.setKbuilder(knowledgeBuilderTmp);
+
+//        KieSession knowledgeSession = kbaseTmp.newKieSession();
+//        knowledgeSession.fireAllRules();
     }
 
     private void createOrUpdateRuleInKBase(Resource resource, KnowledgeBuilder kbuilder, InternalKnowledgeBase kbase) {

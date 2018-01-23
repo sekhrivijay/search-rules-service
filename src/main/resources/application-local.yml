@@ -5,7 +5,7 @@ service:
   ruleReloadRate: 99999999      
 
 exceptionHandler:
-  logForHttpStatusAndAbove: 400
+  logForHttpStatusAndAbove: 500
 
 logging:
   level:
@@ -15,7 +15,9 @@ logging:
           mongodb:
             core:
               MongoTemplate: INFO
-      apache: DEBUG
+      apache:
+        catalina:
+          authenticator: DEBUG
 
 spring:
    data:

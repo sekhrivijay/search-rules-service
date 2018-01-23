@@ -46,7 +46,7 @@ public class RulesController {
         this.rulesService = rulesService;
     }
 
-    void decodeRuleFromTransport(RuleEntity ruleEntity) {
+    private void decodeRuleFromTransport(RuleEntity ruleEntity) {
         if (ruleEntity == null || ruleEntity.getRule() == null) {
             return;
         }
@@ -54,11 +54,10 @@ public class RulesController {
             ruleEntity.setRule(new String(Base64.getDecoder().decode(ruleEntity.getRule())));
         } catch (Exception e) {
             LOGGER.warn("base64 encoding error on request", e.getMessage());
-            return;
         }
     }
 
-    void encodeRuleForTransport(RuleEntity ruleEntity) {
+    private void encodeRuleForTransport(RuleEntity ruleEntity) {
         if (ruleEntity == null || ruleEntity.getRule() == null) {
             return;
         }
@@ -66,7 +65,6 @@ public class RulesController {
             ruleEntity.setRule(new String(Base64.getEncoder().encode(ruleEntity.getRule().getBytes())));
         } catch (Exception e) {
             LOGGER.warn("base64 encoding error on response", e.getMessage());
-            return;
         }
     }
 
@@ -93,7 +91,7 @@ public class RulesController {
     public List<RuleEntity> getRulesBy(RuleEntity ruleEntity) throws Exception {
         decodeRuleFromTransport(ruleEntity);
         List<RuleEntity> ruleList = rulesService.read(ruleEntity);
-        ruleList.stream().forEach(this::encodeRuleForTransport);
+        ruleList.forEach(this::encodeRuleForTransport);
         return ruleList;
     }
 
@@ -112,7 +110,7 @@ public class RulesController {
     @GetMapping("/")
     public List<RuleEntity> getAllRules() throws Exception {
         List<RuleEntity> ruleList = rulesService.read();
-        ruleList.stream().forEach(this::encodeRuleForTransport);
+        ruleList.forEach(this::encodeRuleForTransport);
         return ruleList;
     }
 

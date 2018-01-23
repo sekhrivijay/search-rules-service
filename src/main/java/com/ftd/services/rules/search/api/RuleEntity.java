@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class RuleEntity implements Serializable {
     private String id;
+    private String siteId;
     private String ruleName;
     private String packageName;
     private Status status = Status.INACTIVE;
@@ -60,10 +61,19 @@ public class RuleEntity implements Serializable {
         this.metaData = metaData;
     }
 
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
     @Override
     public String toString() {
         return "RuleEntity{" +
                 "id='" + id + '\'' +
+                ", siteId='" + siteId + '\'' +
                 ", ruleName='" + ruleName + '\'' +
                 ", packageName='" + packageName + '\'' +
                 ", status=" + status +
